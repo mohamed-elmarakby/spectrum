@@ -1,7 +1,7 @@
 # Spectrum
 
 
-LEFT
+LEFT:
 =====
 Sign Up: Link to activate to login successfully
 Reset Password: Link to Reset Password
