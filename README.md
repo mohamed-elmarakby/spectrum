@@ -1,16 +1,62 @@
-# graduation_project
+# Spectrum
 
-A new Flutter project.
+PROJECT PROGRESS:
+======
 
-## Getting Started
+UI Progress
+------
+- [ ] UI:
+  - [x] Starting Pages
+  - [x] Authentication Pages:
+    - [x] Login
+    - [x] Sign Up
+    - [x] Reset Password
+  - [x] Main Screens:
+    - [x] Home
+    - [x] Inside Post
+    - [x] Notifications
+    - [x] Friends List
+    - [x] Chats List
+    - [ ] Inside Chat
+    - [x] Groups List
+  - [x] Profile:
+    - [ ] My Profile
+        - [ ] Adding Post
+          - [ ] Upload Image to Post
+    - [ ] Update My Profile
+        - [ ] Upload Image
+        - [ ] Upload Cover
+    - [x] Other Users Profile
 
-This project is a starting point for a Flutter application.
+Connecting APIs Progress
+------
+- [ ] Connecting Back-End with UI:
+    - [x] Authentication Pages:
+      - [x] Login
+      - [x] Sign Up
+      - [ ] Reset Password
+    - [ ] Main Screens:
+      - [x] Home
+      - [x] Inside Post
+      - [x] Notifications
+        - [x] Go to Post's page 
+      - [x] Friends List
+      - [x] Chats List
+      - [ ] Inside Chat
+        - [ ] Send Messages
+        - [ ] Receive Messages
+      - [x] Groups List
+    - [ ] Profile:
+      - [ ] My Profile
+        - [ ] Adding Post
+          - [ ] Upload Image
+      - [ ] Update My Profile
+      - [ ] Other Users Profile
+        - [ ] Adding Friends
+        - [ ] Removing Friends
+        - [ ] Go to Chat Page
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+BUGS & UI IMPROVEMENTS:
+===============
+- [ ] ALERTS FOR THE USER TO BETTER THE UX
+- [x] FIX LIKING/COMMENTING ON OWN POST BUG
