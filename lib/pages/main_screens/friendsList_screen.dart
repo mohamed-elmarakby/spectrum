@@ -2,8 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:graduation_project/models/socket_models.dart/user_info_socket_model.dart';
+import 'package:graduation_project/pages/profile/profile_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/widgets/friend.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:graduation_project/main.dart';
@@ -83,10 +85,23 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
         padding: const EdgeInsets.all(8.0),
         child: ListView(
           children: applicationProvider.allMyFriends
-              .map((e) => FriendWidget(
-                    friend: e,
-                    isOnline: applicationProvider.allOnline
-                        .any((element) => element.sId == e.id.sId),
+              .map((e) => GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              duration: Duration(milliseconds: 600),
+                              type: PageTransitionType.fade,
+                              child: ProfilePageScreen(
+                                isMine: e.id.sId == user.id,
+                                userId: e.id.sId,
+                              )));
+                    },
+                    child: FriendWidget(
+                      friend: e,
+                      isOnline: applicationProvider.allOnline
+                          .any((element) => element.sId == e.id.sId),
+                    ),
                   ))
               .toList(),
         ),

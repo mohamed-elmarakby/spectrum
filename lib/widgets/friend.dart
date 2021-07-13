@@ -30,10 +30,6 @@ class _FriendWidgetState extends State<FriendWidget> {
               backgroundColor: Colors.white,
               backgroundImage:
                   CachedNetworkImageProvider(widget.friend.id.image),
-              child: Icon(
-                FontAwesomeIcons.userCircle,
-                color: Colors.grey,
-              ),
             ),
             title: Text(
               widget.friend.id.name,

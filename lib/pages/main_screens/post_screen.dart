@@ -121,6 +121,7 @@ class _PostScreenState extends State<PostScreen> {
       body: ListView(
         children: [
           Post(
+            insidePost: true,
             post: applicationProvider.posts[applicationProvider.posts
                 .indexWhere((element) => element.sId == widget.post.sId)],
           ),

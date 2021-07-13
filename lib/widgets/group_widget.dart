@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:graduation_project/models/allGroups_model.dart';
 
 class GroupWidget extends StatefulWidget {
-  String groupName, groupImage;
-  GroupWidget({this.groupImage, this.groupName});
+  Groups groups;
+  GroupWidget({this.groups});
   @override
   _GroupWidgetState createState() => _GroupWidgetState();
 }
@@ -23,9 +25,14 @@ class _GroupWidgetState extends State<GroupWidget> {
           padding: EdgeInsets.all(8),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: Colors.blue,
+              backgroundColor: Colors.white,
+              child: Center(
+                  child: FaIcon(
+                FontAwesomeIcons.users,
+                color: Colors.black,
+              )),
             ),
-            title: Text(widget.groupName),
+            title: Text(widget.groups.name.toString()),
             trailing: Container(
               decoration: BoxDecoration(
                 color: Color(0xFF4F62C4),

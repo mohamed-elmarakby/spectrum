@@ -16,6 +16,7 @@ import 'package:graduation_project/sharedPreference.dart';
 class ApplicationProvider with ChangeNotifier {
   AllOfCurrentUserModel allOfCurrentUserModel = AllOfCurrentUserModel();
   List<Posts> posts = [];
+  List<Posts> someUserPosts = [];
   List<NotificationModel> notificationsList = [];
   List<UserInfoSocketModel> allOnline = [];
   List<UserInfoSocketModel> allUsers = [];
@@ -124,6 +125,30 @@ class ApplicationProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future getSomeonePosts({String id}) async {
+    isLoading = true;
+    log('getting my posts...');
+    await HomeServices().getExactUserPosts(userId: id).then((value) {
+      someUserPosts = [];
+      someUserPosts.addAll(value);
+      final ids = someUserPosts.map((e) => e.sId).toSet();
+      someUserPosts.retainWhere((x) => ids.remove(x.sId));
+      isLoading = false;
+      notifyListeners();
+    }).catchError((onError) {
+      print('in my posts error');
+      print(onError);
+      isLoading = false;
+    }).whenComplete(() {
+      log('done getting posts.');
+      log(someUserPosts.toString());
+      isLoading = false;
+      notifyListeners();
+    });
+    isLoading = false;
+    notifyListeners();
+  }
+
   Future commentAdded({var data}) async {
     log(data.toString());
     log(data.runtimeType.toString());
@@ -192,33 +217,63 @@ class ApplicationProvider with ChangeNotifier {
       UserInfoSocketModel userInfoSocketModel = UserInfoSocketModel();
       userInfoSocketModel = UserInfoSocketModel.fromJson(value.data);
       if (commentAddedSocketModel.comment.commenterId == user.id) {
-        posts[posts.indexWhere(
-                (element) => element.sId == commentAddedSocketModel.postId)]
-            .comments
-            .add(Comments(
-              commenterId: AuthorId(
-                name: userInfoSocketModel.name,
-                sId: userInfoSocketModel.sId,
-                image: userInfoSocketModel.image,
-              ),
-              isEdited: commentAddedSocketModel.comment.isEdited,
-              sId: commentAddedSocketModel.comment.sId,
-              text: commentAddedSocketModel.comment.text,
-            ));
-        final ids = posts[posts.indexWhere(
-                (element) => element.sId == commentAddedSocketModel.postId)]
-            .comments
-            .map((e) => e.sId)
-            .toSet();
-        posts[posts.indexWhere(
-                (element) => element.sId == commentAddedSocketModel.postId)]
-            .comments
-            .retainWhere((x) => ids.remove(x.sId));
-        log(posts[posts.indexWhere(
-                (element) => element.sId == commentAddedSocketModel.postId)]
-            .comments
-            .first
-            .text);
+        if (commentAddedSocketModel.postOwner == user.id) {
+          myPosts[myPosts.indexWhere(
+                  (element) => element.sId == commentAddedSocketModel.postId)]
+              .comments
+              .add(Comments(
+                commenterId: AuthorId(
+                  name: userInfoSocketModel.name,
+                  sId: userInfoSocketModel.sId,
+                  image: userInfoSocketModel.image,
+                ),
+                isEdited: commentAddedSocketModel.comment.isEdited,
+                sId: commentAddedSocketModel.comment.sId,
+                text: commentAddedSocketModel.comment.text,
+              ));
+          final ids = myPosts[myPosts.indexWhere(
+                  (element) => element.sId == commentAddedSocketModel.postId)]
+              .comments
+              .map((e) => e.sId)
+              .toSet();
+          myPosts[myPosts.indexWhere(
+                  (element) => element.sId == commentAddedSocketModel.postId)]
+              .comments
+              .retainWhere((x) => ids.remove(x.sId));
+          log(myPosts[myPosts.indexWhere(
+                  (element) => element.sId == commentAddedSocketModel.postId)]
+              .comments
+              .first
+              .text);
+        } else {
+          posts[posts.indexWhere(
+                  (element) => element.sId == commentAddedSocketModel.postId)]
+              .comments
+              .add(Comments(
+                commenterId: AuthorId(
+                  name: userInfoSocketModel.name,
+                  sId: userInfoSocketModel.sId,
+                  image: userInfoSocketModel.image,
+                ),
+                isEdited: commentAddedSocketModel.comment.isEdited,
+                sId: commentAddedSocketModel.comment.sId,
+                text: commentAddedSocketModel.comment.text,
+              ));
+          final ids = posts[posts.indexWhere(
+                  (element) => element.sId == commentAddedSocketModel.postId)]
+              .comments
+              .map((e) => e.sId)
+              .toSet();
+          posts[posts.indexWhere(
+                  (element) => element.sId == commentAddedSocketModel.postId)]
+              .comments
+              .retainWhere((x) => ids.remove(x.sId));
+          log(posts[posts.indexWhere(
+                  (element) => element.sId == commentAddedSocketModel.postId)]
+              .comments
+              .first
+              .text);
+        }
       }
     });
 
@@ -253,6 +308,15 @@ class ApplicationProvider with ChangeNotifier {
               image: userInfoSocketModel.image,
             ),
           ));
+      final ids = myPosts[myPosts.indexWhere(
+              (element) => element.sId == likeAddedSocketModel.postId)]
+          .likes
+          .map((e) => e.sId)
+          .toSet();
+      myPosts[myPosts.indexWhere(
+              (element) => element.sId == likeAddedSocketModel.postId)]
+          .likes
+          .retainWhere((x) => ids.remove(x.sId));
     });
     notifyListeners();
   }
@@ -271,18 +335,52 @@ class ApplicationProvider with ChangeNotifier {
       UserInfoSocketModel userInfoSocketModel = UserInfoSocketModel();
       userInfoSocketModel = UserInfoSocketModel.fromJson(value.data);
       if (userInfoSocketModel.sId == user.id) {
-        posts[posts.indexWhere(
-                (element) => element.sId == likeAddedSocketModel.postId)]
-            .likes
-            .add(Likes(
-              sId: likeAddedSocketModel.notification.likeId,
-              date: likeAddedSocketModel.notification.date,
-              id: AuthorId(
-                name: userInfoSocketModel.name,
-                sId: userInfoSocketModel.sId,
-                image: userInfoSocketModel.image,
-              ),
-            ));
+        if (likeAddedSocketModel.postOwner == user.id &&
+            likeAddedSocketModel.adder == user.id) {
+          myPosts[myPosts.indexWhere(
+                  (element) => element.sId == likeAddedSocketModel.postId)]
+              .likes
+              .add(Likes(
+                sId: likeAddedSocketModel.notification.likeId,
+                date: likeAddedSocketModel.notification.date,
+                id: AuthorId(
+                  name: userInfoSocketModel.name,
+                  sId: userInfoSocketModel.sId,
+                  image: userInfoSocketModel.image,
+                ),
+              ));
+          final ids = myPosts[myPosts.indexWhere(
+                  (element) => element.sId == likeAddedSocketModel.postId)]
+              .likes
+              .map((e) => e.sId)
+              .toSet();
+          myPosts[myPosts.indexWhere(
+                  (element) => element.sId == likeAddedSocketModel.postId)]
+              .likes
+              .retainWhere((x) => ids.remove(x.sId));
+        } else {
+          posts[posts.indexWhere(
+                  (element) => element.sId == likeAddedSocketModel.postId)]
+              .likes
+              .add(Likes(
+                sId: likeAddedSocketModel.notification.likeId,
+                date: likeAddedSocketModel.notification.date,
+                id: AuthorId(
+                  name: userInfoSocketModel.name,
+                  sId: userInfoSocketModel.sId,
+                  image: userInfoSocketModel.image,
+                ),
+              ));
+          final ids = posts[posts.indexWhere(
+                  (element) => element.sId == likeAddedSocketModel.postId)]
+              .likes
+              .map((e) => e.sId)
+              .toSet();
+          posts[posts.indexWhere(
+                  (element) => element.sId == likeAddedSocketModel.postId)]
+              .likes
+              .retainWhere((x) => ids.remove(x.sId));
+        }
       }
     });
     notifyListeners();
@@ -290,10 +388,19 @@ class ApplicationProvider with ChangeNotifier {
 
   Future removedLike({DislikeSocketModel dislikeSocketModel}) async {
     if (dislikeSocketModel.adder == user.id) {
-      posts[posts.indexWhere(
-              (element) => element.sId == dislikeSocketModel.postId)]
-          .likes
-          .removeWhere((element) => element.id.sId == dislikeSocketModel.adder);
+      if (dislikeSocketModel.postOwner == user.id) {
+        myPosts[myPosts.indexWhere(
+                (element) => element.sId == dislikeSocketModel.postId)]
+            .likes
+            .removeWhere(
+                (element) => element.id.sId == dislikeSocketModel.adder);
+      } else {
+        posts[posts.indexWhere(
+                (element) => element.sId == dislikeSocketModel.postId)]
+            .likes
+            .removeWhere(
+                (element) => element.id.sId == dislikeSocketModel.adder);
+      }
     } else {
       myPosts[myPosts.indexWhere(
               (element) => element.sId == dislikeSocketModel.postId)]
@@ -308,10 +415,19 @@ class ApplicationProvider with ChangeNotifier {
 
   Future removedLikeS({DislikeSocketModel dislikeSocketModel}) async {
     if (dislikeSocketModel.adder == user.id) {
-      posts[posts.indexWhere(
-              (element) => element.sId == dislikeSocketModel.postId)]
-          .likes
-          .removeWhere((element) => element.id.sId == dislikeSocketModel.adder);
+      if (dislikeSocketModel.postOwner == user.id) {
+        myPosts[myPosts.indexWhere(
+                (element) => element.sId == dislikeSocketModel.postId)]
+            .likes
+            .removeWhere(
+                (element) => element.id.sId == dislikeSocketModel.adder);
+      } else {
+        posts[posts.indexWhere(
+                (element) => element.sId == dislikeSocketModel.postId)]
+            .likes
+            .removeWhere(
+                (element) => element.id.sId == dislikeSocketModel.adder);
+      }
     } else {
       myPosts[myPosts.indexWhere(
               (element) => element.sId == dislikeSocketModel.postId)]

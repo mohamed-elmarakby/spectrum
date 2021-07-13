@@ -12,6 +12,7 @@ import 'package:graduation_project/models/allOfCurrentUser_model.dart';
 import 'package:graduation_project/models/socket_models.dart/comment_added_socket_model.dart';
 import 'package:graduation_project/models/socket_models.dart/user_info_socket_model.dart';
 import 'package:graduation_project/pages/main_screens/post_screen.dart';
+import 'package:graduation_project/pages/profile/profile_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -19,8 +20,10 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class Post extends StatefulWidget {
   Posts post;
+  bool insidePost;
   Post({
     this.post,
+    this.insidePost = false,
   });
   @override
   _PostState createState() => _PostState();
@@ -50,17 +53,27 @@ class _PostState extends State<Post> {
             children: [
               GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      PageTransition(
-                          duration: Duration(milliseconds: 600),
-                          type: PageTransitionType.fade,
-                          child: PostScreen(
-                            post: applicationProvider.posts[applicationProvider
-                                .posts
-                                .indexWhere((element) =>
-                                    element.sId == widget.post.sId)],
-                          )));
+                  widget.insidePost
+                      ? Navigator.push(
+                          context,
+                          PageTransition(
+                              duration: Duration(milliseconds: 600),
+                              type: PageTransitionType.fade,
+                              child: ProfilePageScreen(
+                                isMine: widget.post.authorId.sId == user.id,
+                                userId: widget.post.authorId.sId,
+                              )))
+                      : Navigator.push(
+                          context,
+                          PageTransition(
+                              duration: Duration(milliseconds: 600),
+                              type: PageTransitionType.fade,
+                              child: PostScreen(
+                                post: applicationProvider.posts[
+                                    applicationProvider.posts.indexWhere(
+                                        (element) =>
+                                            element.sId == widget.post.sId)],
+                              )));
                 },
                 child: ListTile(
                   leading: CircleAvatar(

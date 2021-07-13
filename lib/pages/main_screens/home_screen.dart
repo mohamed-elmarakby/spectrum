@@ -25,6 +25,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import '../../pages/profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -56,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Provider.of<ApplicationProvider>(context, listen: false);
     // MessageModel messageModel = MessageModel(sourceId: widget.sourceChat.id.toString(),targetId: );
     // socket.emit("signin", widget.sourchat.id);
-    socket = IO.io("http://192.168.1.9:3000", <String, dynamic>{
+    socket = IO.io("http://192.168.1.7:3000", <String, dynamic>{
       "transports": ["websocket"],
       "autoConnect": false,
     });
@@ -245,123 +246,144 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               ...applicationProvider.allUsers
                                   .where((element) =>
-                                      element.name.contains(searchFor))
+                                      element.name.contains(searchFor) &&
+                                      element.sId != user.id)
                                   .map((e) => Column(
                                         children: [
-                                          ListTile(
-                                            leading: CircleAvatar(
-                                              backgroundColor:
-                                                  Colors.transparent,
-                                              child: e.image == null
-                                                  ? Container()
-                                                  : Container(
-                                                      height:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width /
-                                                              2,
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                              .size
-                                                              .width,
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                            fit: BoxFit.cover,
-                                                            image:
-                                                                CachedNetworkImageProvider(
-                                                                    e.image)),
+                                          GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  PageTransition(
+                                                      duration: Duration(
+                                                          milliseconds: 600),
+                                                      type: PageTransitionType
+                                                          .fade,
+                                                      child: ProfilePageScreen(
+                                                        isMine:
+                                                            e.sId == user.id,
+                                                        userId: e.sId,
+                                                      )));
+                                            },
+                                            child: ListTile(
+                                              leading: CircleAvatar(
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                child: e.image == null
+                                                    ? Container()
+                                                    : Container(
+                                                        height: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width /
+                                                            2,
+                                                        width: MediaQuery.of(
+                                                                context)
+                                                            .size
+                                                            .width,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          image: DecorationImage(
+                                                              fit: BoxFit.cover,
+                                                              image:
+                                                                  CachedNetworkImageProvider(
+                                                                      e.image)),
+                                                        ),
                                                       ),
-                                                    ),
-                                            ),
-                                            subtitle: applicationProvider
-                                                    .allMyFriends
-                                                    .any((element) =>
-                                                        element.id.sId == e.sId)
-                                                ? applicationProvider.allOnline
-                                                        .any((element) =>
-                                                            element.sId ==
-                                                            e.sId)
-                                                    ? Text(
-                                                        'Online',
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.green),
-                                                      )
-                                                    : Text('Offline')
-                                                : Text(''),
-                                            trailing: applicationProvider
-                                                    .allMyFriends
-                                                    .any((element) =>
-                                                        element.id.sId == e.sId)
-                                                ? Container(
-                                                    width: width / 4,
-                                                    child: FlatButton(
-                                                        color: Colors.black,
-                                                        onPressed: () {},
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Text(
-                                                                'Chat',
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        14,
-                                                                    color: Colors
-                                                                        .white),
-                                                              ),
-                                                              Icon(
-                                                                Icons.chat,
-                                                                size: 16,
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        )),
-                                                  )
-                                                : Container(
-                                                    width: width / 4,
-                                                    child: FlatButton(
-                                                        color: Colors.black,
-                                                        onPressed: () {},
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Text(
-                                                                'add',
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        14,
-                                                                    color: Colors
-                                                                        .white),
-                                                              ),
-                                                              Icon(
-                                                                Icons.add,
-                                                                color: Colors
-                                                                    .white,
-                                                                size: 16,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        )),
-                                                  ),
-                                            title: Text(
-                                              e.name,
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 16),
+                                              ),
+                                              subtitle: applicationProvider
+                                                      .allMyFriends
+                                                      .any((element) =>
+                                                          element.id.sId ==
+                                                          e.sId)
+                                                  ? applicationProvider
+                                                          .allOnline
+                                                          .any((element) =>
+                                                              element.sId ==
+                                                              e.sId)
+                                                      ? Text(
+                                                          'Online',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.green),
+                                                        )
+                                                      : Text('Offline')
+                                                  : Text(''),
+                                              // trailing: applicationProvider
+                                              //         .allMyFriends
+                                              //         .any((element) =>
+                                              //             element.id.sId ==
+                                              //             e.sId)
+                                              //     ? Container(
+                                              //         width: width / 4,
+                                              //         child: FlatButton(
+                                              //             color: Colors.black,
+                                              //             onPressed: () {},
+                                              //             child: Padding(
+                                              //               padding:
+                                              //                   const EdgeInsets
+                                              //                       .all(8.0),
+                                              //               child: Row(
+                                              //                 mainAxisAlignment:
+                                              //                     MainAxisAlignment
+                                              //                         .center,
+                                              //                 children: [
+                                              //                   Text(
+                                              //                     'Chat',
+                                              //                     style: TextStyle(
+                                              //                         fontSize:
+                                              //                             14,
+                                              //                         color: Colors
+                                              //                             .white),
+                                              //                   ),
+                                              //                   Icon(
+                                              //                     Icons.chat,
+                                              //                     size: 16,
+                                              //                     color: Colors
+                                              //                         .white,
+                                              //                   ),
+                                              //                 ],
+                                              //               ),
+                                              //             )),
+                                              //       )
+                                              //     : Container(
+                                              //         width: width / 4,
+                                              //         child: FlatButton(
+                                              //             color: Colors.black,
+                                              //             onPressed: () {},
+                                              //             child: Padding(
+                                              //               padding:
+                                              //                   const EdgeInsets
+                                              //                       .all(8.0),
+                                              //               child: Row(
+                                              //                 mainAxisAlignment:
+                                              //                     MainAxisAlignment
+                                              //                         .center,
+                                              //                 children: [
+                                              //                   Text(
+                                              //                     'add',
+                                              //                     style: TextStyle(
+                                              //                         fontSize:
+                                              //                             14,
+                                              //                         color: Colors
+                                              //                             .white),
+                                              //                   ),
+                                              //                   Icon(
+                                              //                     Icons.add,
+                                              //                     color: Colors
+                                              //                         .white,
+                                              //                     size: 16,
+                                              //                   ),
+                                              //                 ],
+                                              //               ),
+                                              //             )),
+                                              //       ),
+                                              title: Text(
+                                                e.name,
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16),
+                                              ),
                                             ),
                                           ),
                                           Divider(),

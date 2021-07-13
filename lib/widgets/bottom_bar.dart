@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:graduation_project/pages/main_screens/chats_screen.dart';
 import 'package:graduation_project/pages/main_screens/friendsList_screen.dart';
 import 'package:graduation_project/pages/main_screens/groupsList_screen.dart';
-import 'package:graduation_project/pages/main_screens/notification_scree.dart';
+import 'package:graduation_project/pages/main_screens/notification_screen.dart';
 import 'package:graduation_project/pages/profile/profile_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/sharedPreference.dart';
