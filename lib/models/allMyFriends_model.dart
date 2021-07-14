@@ -27,10 +27,12 @@ class MyFriendsModel {
 class MyFriends {
   String sId;
   Id id;
+  bool isRequest;
   String chatId;
   String date;
 
-  MyFriends({this.sId, this.id, this.chatId, this.date});
+  MyFriends(
+      {this.sId, this.id, this.chatId, this.date, this.isRequest = false});
 
   MyFriends.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];

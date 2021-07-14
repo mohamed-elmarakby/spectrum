@@ -11,6 +11,8 @@ import 'package:graduation_project/models/allOfCurrentUser_model.dart';
 import 'package:graduation_project/models/socket_models.dart/comment_added_socket_model.dart';
 import 'package:graduation_project/models/socket_models.dart/dislike_socket_model.dart';
 import 'package:graduation_project/models/socket_models.dart/like_added_socket_model.dart';
+import 'package:graduation_project/models/socket_models.dart/received_message_socket_model.dart';
+import 'package:graduation_project/models/socket_models.dart/recieved_friend_request_socket_model.dart';
 import 'package:graduation_project/models/socket_models.dart/user_info_socket_model.dart';
 import 'package:graduation_project/pages/authentication/signin.dart';
 import 'package:graduation_project/pages/main_screens/post_screen.dart';
@@ -19,6 +21,7 @@ import 'package:graduation_project/services/home_services.dart';
 import 'package:graduation_project/sharedPreference.dart';
 import 'package:graduation_project/widgets/bottom_bar.dart';
 import 'package:graduation_project/widgets/friend.dart';
+import 'package:graduation_project/widgets/loading_shimmer.dart';
 import 'package:graduation_project/widgets/post_widget.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -36,10 +39,14 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController _searchController = TextEditingController();
   String searchFor = '';
   int chosenPage = 0;
+  bool loading = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    setState(() {
+      loading = true;
+    });
     connect();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ApplicationProvider applicationProvider =
@@ -47,8 +54,13 @@ class _HomeScreenState extends State<HomeScreen> {
       applicationProvider.getMyPosts();
       applicationProvider.getAllPosts();
       applicationProvider.getNotification();
+      applicationProvider.getRequest();
       applicationProvider.getAllUsers();
-      applicationProvider.getAllMyFriends();
+      applicationProvider.getAllMyFriends().then((value) {
+        setState(() {
+          loading = false;
+        });
+      });
     });
   }
 
@@ -143,6 +155,120 @@ class _HomeScreenState extends State<HomeScreen> {
         });
 
         log(applicationProvider.allOnline.toString());
+      });
+      socket.on("msgRecieved", (msgReceived) {
+        log('msgReceived: ');
+        log(msgReceived.toString());
+        log(ReceivedMessageSocketModel.fromJson(msgReceived)
+            .content
+            .toString());
+      });
+      socket.on("newGbMsg", (gbMessage) {
+        log('newGbMsg: ');
+        log(gbMessage.toString());
+        log(ReceivedMessageSocketModel.fromJson(gbMessage).type.toString());
+      });
+      socket.on("addRequestSent", (addRequestSent) {
+        log('addRequestSent: ');
+        log(addRequestSent.toString());
+      });
+      socket.on("requestCanceledSuccessfully", (requestCanceledSuccessfully) {
+        log('requestCanceledSuccessfully: ');
+        log(requestCanceledSuccessfully.toString());
+      });
+      socket.on("requestConfirmedS", (requestConfirmedS) {
+        log('requestConfirmedS: ');
+        log(requestConfirmedS.toString());
+      });
+      socket.on("requestRejectedS", (requestRejectedS) {
+        log('requestRejectedS: ');
+        log(requestRejectedS.toString());
+      });
+      socket.on("addRequestRecieved", (addRequestRecieved) {
+        log('addRequestRecieved: ');
+        log(addRequestRecieved.toString());
+        ReceivedFriendRequestSocketModel receivedFriendRequestSocketModel =
+            ReceivedFriendRequestSocketModel.fromJson(addRequestRecieved);
+        setState(() {
+          applicationProvider.gotFriendRequest = true;
+        });
+        saveData(key: 'hasFriendRequest', saved: "true");
+      });
+      socket.on("requestCanceled", (requestCanceled) {
+        log('requestCanceled: ');
+        log(requestCanceled.toString());
+        setState(() {
+          applicationProvider.gotFriendRequest = false;
+        });
+        saveData(key: 'hasFriendRequest', saved: "false");
+      });
+      socket.on("requestConfirmed", (requestConfirmed) {
+        log('requestConfirmed: ');
+        log(requestConfirmed.toString());
+        setState(() {
+          if (profilePageScreenState != null &&
+              profilePageScreenState.mounted) {
+            profilePageScreenState.setState(() {
+              profilePageScreenState.load = true;
+            });
+            applicationProvider.getAllMyFriends();
+            applicationProvider.getAllPosts().then((value) {
+              profilePageScreenState.setState(() {
+                profilePageScreenState.load = false;
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        duration: Duration(milliseconds: 600),
+                        type: PageTransitionType.fade,
+                        child: ProfilePageScreen(
+                          isMine: false,
+                          userId: requestConfirmed['reciever']['_id'],
+                        )));
+              });
+            });
+          } else {
+            applicationProvider.getAllMyFriends();
+            applicationProvider.getAllPosts().then((value) {});
+          }
+        });
+      });
+      socket.on("requestRejected", (requestRejected) {
+        log('requestRejected: ');
+        log(requestRejected.toString());
+      });
+      socket.on("removingDone", (removingDone) {
+        log('removingDone: ');
+        log(removingDone.toString());
+      });
+      socket.on("youRemoved", (youRemoved) {
+        log('youRemoved: ');
+        log(youRemoved.toString());
+        setState(() {
+          if (profilePageScreenState != null &&
+              profilePageScreenState.mounted) {
+            profilePageScreenState.setState(() {
+              profilePageScreenState.load = true;
+            });
+            applicationProvider.getAllMyFriends();
+            applicationProvider.getAllPosts().then((value) {
+              profilePageScreenState.setState(() {
+                profilePageScreenState.load = false;
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        duration: Duration(milliseconds: 600),
+                        type: PageTransitionType.fade,
+                        child: ProfilePageScreen(
+                          isMine: false,
+                          userId: youRemoved['remover'],
+                        )));
+              });
+            });
+          } else {
+            applicationProvider.getAllMyFriends();
+            applicationProvider.getAllPosts().then((value) {});
+          }
+        });
       });
       socket.emit("createUserRoom", {user.id});
       socket.emit('activeNow', {'id': user.id});
@@ -401,11 +527,21 @@ class _HomeScreenState extends State<HomeScreen> {
                               hoverColor: Colors.transparent,
                               focusColor: Colors.transparent,
                               onTap: () {
+                                setState(() {
+                                  loading = true;
+                                });
                                 applicationProvider.getMyPosts();
                                 applicationProvider.getAllPosts();
+                                applicationProvider.getRequest();
                                 applicationProvider.getNotification();
                                 applicationProvider.getAllUsers();
-                                applicationProvider.getAllMyFriends();
+                                applicationProvider
+                                    .getAllMyFriends()
+                                    .then((value) {
+                                  setState(() {
+                                    loading = false;
+                                  });
+                                });
                               },
                               child: Container(
                                 width: width / 2,
@@ -448,85 +584,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           ),
-                    applicationProvider.getLoading()
-                        ? Column(
-                            children: [
-                              ...List.generate(
-                                  4,
-                                  (index) => Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10.0, vertical: 4),
-                                        child: SizedBox(
-                                          height: 160.0,
-                                          child: Shimmer.fromColors(
-                                            baseColor:
-                                                Colors.black.withOpacity(0.4),
-                                            highlightColor:
-                                                Colors.black.withOpacity(0.6),
-                                            child: Card(
-                                              child: ListTile(
-                                                dense: true,
-                                                title: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: <Widget>[
-                                                    Container(
-                                                      width: width * 0.4,
-                                                      child: Text(
-                                                        '',
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: TextStyle(
-                                                            fontSize: 15.0),
-                                                      ),
-                                                    ),
-                                                    Row(
-                                                      children: <Widget>[
-                                                        Text(
-                                                          '',
-                                                          // textDirection: ui.TextDirection.ltr,
-                                                          style: TextStyle(
-                                                              fontFamily:
-                                                                  "Arial"),
-                                                        ),
-                                                        SizedBox(
-                                                          width: 5,
-                                                        ),
-                                                      ],
-                                                    )
-                                                  ],
-                                                ),
-                                                leading: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          25.0),
-                                                ),
-                                                subtitle: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: <Widget>[
-                                                    Container(
-                                                      width: width * 0.4,
-                                                      child: Text(
-                                                        '',
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      )),
-                            ],
-                          )
-                        : Container(),
+                    loading ? LoadingShimmer(width: width) : Container(),
                     applicationProvider.posts.isEmpty
                         ? Padding(
                             padding: const EdgeInsets.all(8.0),

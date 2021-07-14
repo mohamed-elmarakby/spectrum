@@ -28,6 +28,7 @@ class _BottomBarState extends State<BottomBar> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ApplicationProvider applicationProvider =
           Provider.of<ApplicationProvider>(context, listen: false);
+      applicationProvider.getRequest();
       applicationProvider.getNotification();
     });
   }
@@ -111,10 +112,12 @@ class _BottomBarState extends State<BottomBar> {
                 ),
               ),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   setState(() {
                     widget.chosenPage = 2;
                   });
+                  applicationProvider.gotFriendRequest = false;
+                  await saveData(key: 'hasFriendRequest', saved: 'false');
                   Navigator.push(
                       context,
                       PageTransition(
@@ -128,8 +131,18 @@ class _BottomBarState extends State<BottomBar> {
                   children: [
                     Icon(
                       FontAwesomeIcons.userFriends,
+                      color: applicationProvider.gotFriendRequest == null ||
+                              applicationProvider.gotFriendRequest == false
+                          ? Colors.black
+                          : Colors.red,
                     ),
-                    Text('Friends List', style: TextStyle()),
+                    Text('Friends List',
+                        style: TextStyle(
+                          color: applicationProvider.gotFriendRequest == null ||
+                                  applicationProvider.gotFriendRequest == false
+                              ? Colors.black
+                              : Colors.red,
+                        )),
                   ],
                 ),
               ),

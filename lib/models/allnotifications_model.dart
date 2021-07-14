@@ -2,6 +2,7 @@ class AllNotificationsModel {
   String sId;
   String notification;
   String postId;
+  bool isFriendRequest;
   bool isViewed;
   String commentId;
   String likeId;
@@ -11,6 +12,7 @@ class AllNotificationsModel {
       {this.sId,
       this.notification,
       this.postId,
+      this.isFriendRequest = false,
       this.isViewed,
       this.commentId,
       this.likeId,

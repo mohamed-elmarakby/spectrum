@@ -35,15 +35,20 @@ class _NotificationWidgetState extends State<NotificationWidget> {
             style:
                 TextStyle(color: Colors.black.withOpacity(0.41), fontSize: 10),
           ),
-          trailing: widget.notification.likeId == null
+          trailing: widget.notification.isFriend
               ? Icon(
-                  Icons.comment_outlined,
+                  Icons.person_add,
                   color: Colors.green,
                 )
-              : Icon(
-                  Icons.thumb_up_alt_outlined,
-                  color: Colors.blue,
-                ),
+              : widget.notification.likeId == null
+                  ? Icon(
+                      Icons.comment_outlined,
+                      color: Colors.green,
+                    )
+                  : Icon(
+                      Icons.thumb_up_alt_outlined,
+                      color: Colors.blue,
+                    ),
         ),
         Divider(),
       ],

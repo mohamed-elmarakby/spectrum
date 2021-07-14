@@ -68,6 +68,7 @@ class NotificationModel {
   String notification;
   String postId;
   bool isViewed;
+  bool isFriend;
   String commentId;
   String date;
   String likeId;
@@ -77,6 +78,7 @@ class NotificationModel {
       this.notification,
       this.postId,
       this.isViewed,
+      this.isFriend = false,
       this.likeId,
       this.commentId,
       this.date});

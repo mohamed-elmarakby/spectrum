@@ -7,6 +7,7 @@ import 'package:graduation_project/models/allChats_model.dart';
 import 'package:graduation_project/models/allGroups_model.dart';
 import 'package:graduation_project/models/allMyFriends_model.dart';
 import 'package:graduation_project/models/allnotifications_model.dart';
+import 'package:graduation_project/models/recieved_friend_request.dart';
 import 'package:graduation_project/models/socket_models.dart/my_post_model_socket.dart';
 import 'package:graduation_project/models/socket_models.dart/user_info_socket_model.dart';
 import '../models/allOfCurrentUser_model.dart';
@@ -130,12 +131,74 @@ class HomeServices {
     return tempAllMyFriends;
   }
 
+  Future<List<ReceivedFriendRequestModel>> getSendRequests(
+      {String userId}) async {
+    Dio dio = Dio();
+    String url = Constants().apiUrl + 'friends/sentRequests';
+    log(url);
+    List<ReceivedFriendRequestModel> tempSentRequests = [];
+    await dio
+        .get(
+      url,
+      options: Options(headers: {
+        'userId': userId,
+      }),
+    )
+        .then(
+      (value) async {
+        print(value.statusCode);
+        print(value.data);
+        List sentRequests = value.data;
+        log('temp friend request list: ' + sentRequests.toString());
+        for (var friend in sentRequests) {
+          log('friend: ' + friend.toString());
+          tempSentRequests.add(ReceivedFriendRequestModel.fromJson(friend));
+        }
+        final ids = tempSentRequests.map((e) => e.sId).toSet();
+        tempSentRequests.retainWhere((x) => ids.remove(x.sId));
+        log(tempSentRequests.toString());
+      },
+    );
+    return tempSentRequests;
+  }
+
+  Future<List<ReceivedFriendRequestModel>> getFriendRequests(
+      {String userId}) async {
+    Dio dio = Dio();
+    String url = Constants().apiUrl + 'friends/requests';
+    log(url);
+    List<ReceivedFriendRequestModel> tempFriendRequests = [];
+    await dio
+        .get(
+      url,
+      options: Options(headers: {
+        'userId': userId,
+      }),
+    )
+        .then(
+      (value) async {
+        print(value.statusCode);
+        print(value.data);
+        List gottenRequests = value.data;
+        log('temp friend request list: ' + gottenRequests.toString());
+        for (var friend in gottenRequests) {
+          log('friend: ' + friend.toString());
+          tempFriendRequests.add(ReceivedFriendRequestModel.fromJson(friend));
+        }
+        final ids = tempFriendRequests.map((e) => e.sId).toSet();
+        tempFriendRequests.retainWhere((x) => ids.remove(x.sId));
+        log(tempFriendRequests.toString());
+      },
+    );
+    return tempFriendRequests;
+  }
+
   Future<List<AllNotificationsModel>> getMyNotifications(
       {String userId}) async {
     Dio dio = Dio();
     String url = Constants().apiUrl + 'friends/notifications';
     log(url);
-    List<AllNotificationsModel> tempAllMyFriends = [];
+    List<AllNotificationsModel> tempNotifications = [];
     await dio
         .get(
       url,
@@ -150,14 +213,14 @@ class HomeServices {
         List tempData = value.data;
         for (var notification in tempData) {
           log(notification.toString());
-          tempAllMyFriends.add(AllNotificationsModel.fromJson(notification));
+          tempNotifications.add(AllNotificationsModel.fromJson(notification));
         }
-        final ids = tempAllMyFriends.map((e) => e.sId).toSet();
-        tempAllMyFriends.retainWhere((x) => ids.remove(x.sId));
-        log(tempAllMyFriends.toString());
+        final ids = tempNotifications.map((e) => e.sId).toSet();
+        tempNotifications.retainWhere((x) => ids.remove(x.sId));
+        log(tempNotifications.toString());
       },
     );
-    return tempAllMyFriends;
+    return tempNotifications;
   }
 
   Future<List<AllChatsModel>> getAllMyChats({String userId}) async {

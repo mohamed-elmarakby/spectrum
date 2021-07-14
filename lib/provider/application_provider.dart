@@ -25,6 +25,7 @@ class ApplicationProvider with ChangeNotifier {
   int test = 0;
   bool isLoading = false;
   bool gotNotification;
+  bool gotFriendRequest;
   List<UserInfoSocketModel> getOnline() => allOnline;
   List<MyFriends> getFriends() => allMyFriends;
   getNotification() async {
@@ -36,6 +37,18 @@ class ApplicationProvider with ChangeNotifier {
     } else {
       gotNotification = true;
       await saveData(key: 'hasNotification', saved: "true");
+    }
+  }
+
+  getRequest() async {
+    var tempGotFriendRequest;
+    tempGotFriendRequest = await readData(key: 'hasFriendRequest');
+    if (tempGotFriendRequest == null || tempGotFriendRequest == "false") {
+      gotFriendRequest = false;
+      await saveData(key: 'hasFriendRequest', saved: "false");
+    } else {
+      gotFriendRequest = true;
+      await saveData(key: 'hasFriendRequest', saved: "true");
     }
   }
 
