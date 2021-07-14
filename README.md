@@ -17,7 +17,7 @@ UI Progress
     - [x] Notifications
     - [x] Friends List
     - [x] Chats List
-    - [ ] Inside Chat
+    - [x] Inside Chat
     - [x] Groups List
   - [x] Profile:
     - [ ] My Profile
@@ -52,8 +52,8 @@ Connecting APIs Progress
           - [ ] Upload Image
       - [ ] Update My Profile
       - [ ] Other Users Profile
-        - [ ] Adding Friends
-        - [ ] Removing Friends
+        - [x] Adding Friends
+        - [x] Removing Friends
         - [ ] Go to Chat Page
 
 BUGS & UI IMPROVEMENTS:
