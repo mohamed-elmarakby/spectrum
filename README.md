@@ -19,10 +19,10 @@ UI Progress
     - [x] Chats List
     - [x] Inside Chat
     - [x] Groups List
-  - [x] Profile:
-    - [ ] My Profile
-        - [ ] Adding Post
-          - [ ] Upload Image to Post
+  - [ ] Profile:
+    - [x] My Profile
+        - [x] Adding Post
+          - [x] Upload Image to Post
     - [ ] Update My Profile
         - [ ] Upload Image
         - [ ] Upload Cover
@@ -47,9 +47,9 @@ Connecting APIs Progress
         - [ ] Receive Messages
       - [x] Groups List
     - [ ] Profile:
-      - [ ] My Profile
-        - [ ] Adding Post
-          - [ ] Upload Image
+      - [x] My Profile
+        - [x] Adding Post
+          - [x] Upload Image
       - [ ] Update My Profile
       - [ ] Other Users Profile
         - [x] Adding Friends
@@ -58,5 +58,7 @@ Connecting APIs Progress
 
 BUGS & UI IMPROVEMENTS:
 ===============
+- [ ] ADD PUSH NOTIFICATIONS WHEN GETTING NEW MESSAGE, LIKE, COMMENT, FRIEND REQUEST
 - [ ] ALERTS FOR THE USER TO BETTER THE UX
+- [ ] ADD CATCH ERRORS FOR ALL APIS
 - [x] FIX LIKING/COMMENTING ON OWN POST BUG
