@@ -14,6 +14,7 @@ import 'package:graduation_project/models/socket_models.dart/user_info_socket_mo
 import 'package:graduation_project/pages/main_screens/post_screen.dart';
 import 'package:graduation_project/pages/profile/profile_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
+import 'package:graduation_project/widgets/full_photo.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -137,18 +138,35 @@ class _PostState extends State<Post> {
                           .image ==
                       null
                   ? Container()
-                  : Container(
-                      height: MediaQuery.of(context).size.width / 2,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: CachedNetworkImageProvider(
-                                applicationProvider
-                                    .posts[applicationProvider.posts.indexWhere(
-                                        (element) =>
-                                            element.sId == widget.post.sId)]
-                                    .image)),
+                  : Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => FullPhoto(
+                                      url: applicationProvider
+                                          .posts[applicationProvider.posts
+                                              .indexWhere((element) =>
+                                                  element.sId ==
+                                                  widget.post.sId)]
+                                          .image)));
+                        },
+                        child: Container(
+                          height: MediaQuery.of(context).size.width / 2,
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: CachedNetworkImageProvider(
+                                    applicationProvider
+                                        .posts[applicationProvider.posts
+                                            .indexWhere((element) =>
+                                                element.sId == widget.post.sId)]
+                                        .image)),
+                          ),
+                        ),
                       ),
                     ),
               Padding(

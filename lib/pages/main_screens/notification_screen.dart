@@ -5,6 +5,7 @@ import 'package:graduation_project/main.dart';
 import 'package:graduation_project/models/allnotifications_model.dart';
 import 'package:graduation_project/models/socket_models.dart/comment_added_socket_model.dart';
 import 'package:graduation_project/models/socket_models.dart/like_added_socket_model.dart';
+import 'package:graduation_project/pages/main_screens/home_screen.dart';
 import 'package:graduation_project/pages/main_screens/my_post_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/services/home_services.dart';
@@ -109,6 +110,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                             child: MyPostScreen(
                                               post: value,
                                             )));
+                                  }).onError((error, stackTrace) {
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                            duration:
+                                                Duration(milliseconds: 600),
+                                            type: PageTransitionType.fade,
+                                            child: HomeScreen()));
                                   });
                                 },
                                 child: NotificationWidget(

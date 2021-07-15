@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -15,8 +18,10 @@ import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/services/freinds_services.dart';
 import 'package:graduation_project/services/home_services.dart';
 import 'package:graduation_project/sharedPreference.dart';
+import 'package:graduation_project/widgets/full_photo.dart';
 import 'package:graduation_project/widgets/my_post_widget.dart';
 import 'package:graduation_project/widgets/post_widget.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -50,6 +55,86 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
         print(userInfoResponse.id);
       });
     });
+  }
+
+  final picker = ImagePicker();
+  String base64Image;
+  File imageFile;
+  Uint8List bytes;
+  Future getImage() async {
+    ImageSource source;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return Theme(
+          data: ThemeData.light(),
+          child: AlertDialog(
+            elevation: 3,
+            title: Text("Add Image"),
+            content: Text("Where do you want to get the image?"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text(
+                  "Camera",
+                ),
+                onPressed: () {
+                  setState(() {
+                    source = ImageSource.camera;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              Builder(
+                builder: (context) {
+                  return FlatButton(
+                    child: Text(
+                      "Gallery",
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        source = ImageSource.gallery;
+                      });
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+              )
+              // usually buttons at the bottom of the dialog
+              ,
+            ],
+          ),
+        );
+      },
+    ).then((value) async {
+      var image = await picker.getImage(
+        source: source,
+        imageQuality: 60,
+      );
+      if (image != null) {
+        List<int> imageBytes = File(image.path).readAsBytesSync();
+        setState(() {
+          imageFile = File(image.path);
+          base64Image = base64Encode(imageBytes);
+          bytes = base64.decode(base64Image);
+          print('Encoded Image here $base64Image');
+        });
+      }
+    });
+  }
+
+  Future post() async {
+    ApplicationProvider applicationProvider =
+        Provider.of<ApplicationProvider>(context, listen: false);
+    if (_postTextController.text.isNotEmpty) {
+      await HomeServices()
+          .addPostApi(text: _postTextController.text, file: imageFile)
+          .then((value) async {
+        await applicationProvider.getMyPosts().then((value) {
+          _postTextController.clear();
+        });
+      });
+    }
   }
 
   @override
@@ -187,26 +272,50 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                             children: [
                               load
                                   ? Container()
-                                  : CachedNetworkImage(
-                                      imageUrl: widget.isMine
-                                          ? user.cover
-                                          : userInfoResponse.cover,
-                                      useOldImageOnUrlChange: true,
-                                      width: MediaQuery.of(context).size.width,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.25,
-                                      fit: BoxFit.cover,
+                                  : GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => FullPhoto(
+                                                    url: widget.isMine
+                                                        ? user.cover
+                                                        : userInfoResponse
+                                                            .cover)));
+                                      },
+                                      child: CachedNetworkImage(
+                                        imageUrl: widget.isMine
+                                            ? user.cover
+                                            : userInfoResponse.cover,
+                                        useOldImageOnUrlChange: true,
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.25,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                               Align(
                                 alignment: Alignment(0, 0.45),
-                                child: CircleAvatar(
-                                  minRadius: 20,
-                                  maxRadius: 45,
-                                  backgroundImage: CachedNetworkImageProvider(
-                                    widget.isMine
-                                        ? user.image
-                                        : userInfoResponse.image,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => FullPhoto(
+                                                url: widget.isMine
+                                                    ? user.image
+                                                    : userInfoResponse.image)));
+                                  },
+                                  child: CircleAvatar(
+                                    minRadius: 20,
+                                    maxRadius: 45,
+                                    backgroundImage: CachedNetworkImageProvider(
+                                      widget.isMine
+                                          ? user.image
+                                          : userInfoResponse.image,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -956,7 +1065,9 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                 padding:
                                                     const EdgeInsets.all(8.0),
                                                 child: GestureDetector(
-                                                  onTap: () {},
+                                                  onTap: () {
+                                                    getImage();
+                                                  },
                                                   child: Container(
                                                     height:
                                                         MediaQuery.of(context)
@@ -1013,7 +1124,9 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                 padding:
                                                     const EdgeInsets.all(8.0),
                                                 child: GestureDetector(
-                                                  onTap: () {},
+                                                  onTap: () {
+                                                    post();
+                                                  },
                                                   child: Container(
                                                     height:
                                                         MediaQuery.of(context)

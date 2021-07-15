@@ -452,11 +452,18 @@ class ApplicationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future commentRemoved({var postId, var comment, String id}) async {
+  Future commentRemoved(
+      {String postOwner, var postId, var comment, String id}) async {
     if (id == user.id) {
-      posts[posts.indexWhere((element) => element.sId == postId)]
-          .comments
-          .removeWhere((element) => element.sId == comment);
+      if (postOwner == user.id) {
+        myPosts[myPosts.indexWhere((element) => element.sId == postId)]
+            .comments
+            .removeWhere((element) => element.sId == comment);
+      } else {
+        posts[posts.indexWhere((element) => element.sId == postId)]
+            .comments
+            .removeWhere((element) => element.sId == comment);
+      }
     } else {
       myPosts[myPosts.indexWhere((element) => element.sId == postId)]
           .comments
@@ -467,11 +474,19 @@ class ApplicationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future commentRemovedS({var postId, var comment, String id}) async {
+  Future commentRemovedS(
+      {String postOwner, var postId, var comment, String id}) async {
+    log(postOwner);
     if (id == user.id) {
-      posts[posts.indexWhere((element) => element.sId == postId)]
-          .comments
-          .removeWhere((element) => element.sId == comment);
+      if (postOwner == user.id) {
+        myPosts[myPosts.indexWhere((element) => element.sId == postId)]
+            .comments
+            .removeWhere((element) => element.sId == comment);
+      } else {
+        posts[posts.indexWhere((element) => element.sId == postId)]
+            .comments
+            .removeWhere((element) => element.sId == comment);
+      }
     } else {
       myPosts[myPosts.indexWhere((element) => element.sId == postId)]
           .comments

@@ -7,7 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:graduation_project/main.dart';
 import 'package:graduation_project/models/login_model.dart';
 import 'package:graduation_project/models/token_decryption_model.dart';
-import 'package:graduation_project/pages/authentication/enter_code.dart';
+import 'package:graduation_project/pages/authentication/new_password.dart';
 import 'package:graduation_project/pages/authentication/signin.dart';
 import 'package:graduation_project/pages/authentication/signup.dart';
 import 'package:graduation_project/pages/main_screens/home_screen.dart';
@@ -17,34 +17,39 @@ import 'package:graduation_project/widgets/error_text.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:page_transition/page_transition.dart';
 
-class ForgotPassword extends StatefulWidget {
+class EnterCodeScreen extends StatefulWidget {
+  String email;
+  EnterCodeScreen({this.email});
   @override
-  _ForgotPasswordState createState() => _ForgotPasswordState();
+  _EnterCodeScreenState createState() => _EnterCodeScreenState();
 }
 
-class _ForgotPasswordState extends State<ForgotPassword> {
-  TextEditingController _emailController = TextEditingController();
+class _EnterCodeScreenState extends State<EnterCodeScreen> {
+  TextEditingController _codeController = TextEditingController();
   bool showError = false;
-  bool checkingEmail = false;
-  Future checkEmail() async {
-    setState(() {
-      checkingEmail = true;
-    });
-    if (_emailController.text.isNotEmpty) {
+  bool sendingCode = false;
+  Future sendCode() async {
+    if (_codeController.text.isNotEmpty) {
+      setState(() {
+        sendingCode = true;
+      });
       await AuthenticationServices()
-          .checkEmail(email: _emailController.text.trim())
+          .checkCode(
+        email: widget.email,
+        code: _codeController.text.trim(),
+      )
           .then((value) {
         if (value) {
           setState(() {
-            checkingEmail = true;
+            sendingCode = true;
           });
           Navigator.push(
               context,
               PageTransition(
                   duration: Duration(milliseconds: 600),
                   type: PageTransitionType.fade,
-                  child: EnterCodeScreen(
-                    email: _emailController.text.trim(),
+                  child: NewPasswordScreen(
+                    email: widget.email,
                   )));
         }
       });
@@ -67,7 +72,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Reset Password",
+                  "Write Code",
                   style: TextStyle(
                     fontFamily: "GE_SS_TWO",
                     fontWeight: FontWeight.w500,
@@ -83,7 +88,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Text(
-                    "Email",
+                    "Code",
                     style: TextStyle(
                       fontFamily: "GE_SS_TWO",
                       fontWeight: FontWeight.w300,
@@ -95,7 +100,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
-                    controller: _emailController,
+                    controller: _codeController,
                     style: TextStyle(
                       color: Colors.black,
                       fontFamily: 'Roboto',
@@ -104,7 +109,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     ),
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.only(left: 20.0, right: 20),
-                      hintText: 'Your Email',
+                      hintText: 'Your Code',
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -124,7 +129,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 highlightColor: Colors.transparent,
                 hoverColor: Colors.transparent,
                 focusColor: Colors.transparent,
-                onTap: checkEmail,
+                onTap: sendCode,
                 child: Container(
                   height: height / 16,
                   width: width / 2.25,
@@ -140,13 +145,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     borderRadius: BorderRadius.circular(20.00),
                   ),
                   child: Center(
-                    child: checkingEmail
+                    child: sendingCode
                         ? SpinKitWave(
                             color: Colors.white,
                             size: 14,
                           )
                         : Text(
-                            "Next",
+                            "Send Code",
                             style: TextStyle(
                               fontFamily: "GE_SS_TWO",
                               fontWeight: FontWeight.w300,

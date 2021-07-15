@@ -40,7 +40,9 @@ class FriendsServices {
         print(value.data);
         tempUserInfoResponse = UserInfoResponse.fromJson(value.data);
       },
-    );
+    ).onError((error, stackTrace) {
+      log(error);
+    });
     return tempUserInfoResponse;
   }
 

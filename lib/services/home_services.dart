@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:graduation_project/constant/constant.dart';
@@ -11,6 +13,7 @@ import 'package:graduation_project/models/recieved_friend_request.dart';
 import 'package:graduation_project/models/socket_models.dart/my_post_model_socket.dart';
 import 'package:graduation_project/models/socket_models.dart/user_info_socket_model.dart';
 import '../models/allOfCurrentUser_model.dart';
+import 'package:http_parser/src/media_type.dart';
 
 class HomeServices {
   Future<AllOfCurrentUserModel> getAllOfCurrentUser({String userId}) async {
@@ -418,25 +421,42 @@ class HomeServices {
 
   Future addPostApi({
     String text,
-    String password,
+    String image,
+    File file,
   }) async {
     Dio dio = Dio();
     String url = Constants().apiUrl + 'addNewPost';
     log(url);
-    Map post = {
-      "text": text,
-      "id": user.id,
-    };
-    log(post.toString());
+    String fileName = file == null ? null : file.path.split('/').last;
+    FormData formData = FormData.fromMap({
+      "image": file == null
+          ? null
+          : await MultipartFile.fromFile(
+              file.path,
+              filename: fileName,
+              contentType: MediaType("image", "jpg"),
+            ),
+      "data": json.encode({
+        'id': user.id,
+        'text': text,
+      })
+    });
+    log(fileName.toString());
+    log(file.path.toString());
+    log(formData.toString());
+    log(formData.files.toString());
+    log(formData.fields.toString());
     await dio
         .post(
       url,
-      data: post,
+      data: formData,
     )
-        .then(
+        .catchError((error, stackTrace) {
+      log(error.toString());
+    }).then(
       (value) {
-        print(value.statusCode);
-        print(value.data);
+        print(value.statusCode.toString());
+        print(value.data.toString());
       },
     );
   }
@@ -462,6 +482,123 @@ class HomeServices {
       (value) {
         print(value.statusCode);
         print(value.data);
+      },
+    );
+  }
+
+  Future deletePost({
+    String postId,
+  }) async {
+    Dio dio = Dio();
+    String url = Constants().apiUrl + 'deletePost';
+    log(url);
+    await dio
+        .delete(
+      url,
+      options: Options(headers: {
+        "userId": user.id,
+        "postId": postId,
+      }),
+    )
+        .then(
+      (value) {
+        print(value.statusCode);
+        print(value.data);
+      },
+    );
+  }
+
+  Future editCommentApi({
+    String newComment,
+    String postId,
+    String commentId,
+  }) async {
+    Dio dio = Dio();
+    String url = Constants().apiUrl + 'editComment';
+    log(url);
+    Map comment = {
+      "newComment": newComment,
+      "postId": postId,
+      "commentId": commentId,
+    };
+    log(comment.toString());
+    await dio
+        .patch(
+      url,
+      data: comment,
+    )
+        .then(
+      (value) {
+        print(value.statusCode);
+        print(value.data);
+      },
+    );
+  }
+
+  Future updateProfile({
+    String name,
+    String email,
+    String oldPassword,
+    String newPassword,
+    String address,
+    File cImage,
+    File pImage,
+  }) async {
+    Dio dio = Dio();
+    String url = Constants().apiUrl + 'editInfo';
+    log(url);
+    String cImageName = cImage == null ? null : cImage.path.split('/').last;
+    String pImageName = pImage == null ? null : pImage.path.split('/').last;
+    FormData formData = FormData.fromMap({
+      "data": json.encode({
+        'id': user.id,
+        'name': name,
+        'email': email,
+        'oldPassword': oldPassword,
+        'newPassword': newPassword,
+        'address': address,
+      })
+    });
+    await formData.files.add(MapEntry(
+        'pImage',
+        pImage == null
+            ? null
+            : await MultipartFile.fromFile(
+                pImage.path,
+                filename: pImageName,
+                contentType: MediaType("image", "jpg"),
+              )));
+    await formData.files.add(MapEntry(
+        'cImage',
+        cImage == null
+            ? null
+            : await MultipartFile.fromFile(
+                cImage.path,
+                filename: cImageName,
+                contentType: MediaType("image", "jpg"),
+              )));
+    log(user.id.toString());
+    log(formData.toString());
+    log(formData.files.toString());
+    log(formData.fields.toString());
+    log(pImageName.toString());
+    log(pImage.path.toString());
+    log(cImageName.toString());
+    log(cImage.path.toString());
+
+    await dio
+        .post(
+      url,
+      data: formData,
+    )
+        .catchError((error, stackTrace) {
+      log(error.toString());
+    }).catchError((error, stackTrace) {
+      log(error);
+    }).then(
+      (value) {
+        print(value.statusCode.toString());
+        print(value.data.toString());
       },
     );
   }

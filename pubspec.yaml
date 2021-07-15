@@ -36,6 +36,7 @@ dependencies:
   shared_preferences:
   shimmer:
   image_picker:
+  photo_view:
   permission:
   easy_localization:
   flutter_svg:

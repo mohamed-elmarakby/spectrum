@@ -10,6 +10,7 @@ import 'package:graduation_project/models/allOfCurrentUser_model.dart';
 import 'package:graduation_project/models/socket_models.dart/comment_added_socket_model.dart';
 import 'package:graduation_project/models/socket_models.dart/user_info_socket_model.dart';
 import 'package:graduation_project/provider/application_provider.dart';
+import 'package:graduation_project/services/home_services.dart';
 import 'package:graduation_project/widgets/comment.dart';
 import 'package:graduation_project/widgets/post_widget.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +35,7 @@ class _PostScreenState extends State<PostScreen> {
   Widget build(BuildContext context) {
     ApplicationProvider applicationProvider =
         Provider.of<ApplicationProvider>(context, listen: true);
-    _showDialog() async {
+    _showDialog({String commentId}) async {
       showModalBottomSheet(
           context: context,
           isScrollControlled: true,
@@ -72,22 +73,29 @@ class _PostScreenState extends State<PostScreen> {
                             child: IconButton(
                                 color: Colors.white,
                                 icon: Icon(Icons.done),
-                                onPressed: () {
+                                onPressed: () async {
                                   if (_editCommentController.text
                                       .trim()
                                       .isNotEmpty) {
                                     log(_editCommentController.text);
-                                    // socket.emit('editComment', {
-                                    //   "commenterId": user.id,
-                                    //   "postOwner": widget.post.authorId.sId,
-                                    //   "commentId": e.sId,
-                                    //   "postId": applicationProvider
-                                    //       .posts[applicationProvider.posts
-                                    //           .indexWhere((element) =>
-                                    //               element.sId ==
-                                    //               widget.post.sId)]
-                                    //       .sId,
-                                    // });
+                                    log(widget.post.sId);
+                                    log(commentId);
+                                    await HomeServices()
+                                        .editCommentApi(
+                                            commentId: commentId,
+                                            postId: widget.post.sId,
+                                            newComment:
+                                                _editCommentController.text)
+                                        .then((value) {
+                                      setState(() {
+                                        widget.post.comments
+                                            .firstWhere((element) =>
+                                                element.sId == commentId)
+                                            .text = _editCommentController.text;
+                                        _editCommentController.clear();
+                                      });
+                                      Navigator.pop(context);
+                                    });
                                   }
                                 }),
                           ),
@@ -196,8 +204,11 @@ class _PostScreenState extends State<PostScreen> {
                                                       Expanded(
                                                         flex: 1,
                                                         child: IconButton(
-                                                          onPressed:
-                                                              _showDialog,
+                                                          onPressed: () {
+                                                            _showDialog(
+                                                                commentId:
+                                                                    e.sId);
+                                                          },
                                                           icon: Icon(
                                                             Icons.edit,
                                                             color: Colors.grey,

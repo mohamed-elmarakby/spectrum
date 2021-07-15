@@ -7,87 +7,49 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:graduation_project/main.dart';
 import 'package:graduation_project/models/login_model.dart';
 import 'package:graduation_project/models/token_decryption_model.dart';
-import 'package:graduation_project/pages/authentication/forgot_password.dart';
+import 'package:graduation_project/pages/authentication/signin.dart';
 import 'package:graduation_project/pages/authentication/signup.dart';
 import 'package:graduation_project/pages/main_screens/home_screen.dart';
 import 'package:graduation_project/services/authentication_services.dart';
-import 'package:graduation_project/services/freinds_services.dart';
 import 'package:graduation_project/sharedPreference.dart';
 import 'package:graduation_project/widgets/error_text.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:page_transition/page_transition.dart';
 
-class SignIn extends StatefulWidget {
+class NewPasswordScreen extends StatefulWidget {
+  String email;
+  NewPasswordScreen({this.email});
   @override
-  _SignInState createState() => _SignInState();
+  _NewPasswordScreenState createState() => _NewPasswordScreenState();
 }
 
-class _SignInState extends State<SignIn> {
-  TextEditingController _emailController = TextEditingController();
+class _NewPasswordScreenState extends State<NewPasswordScreen> {
+  bool showPassword = true;
   TextEditingController _passwordController = TextEditingController();
   bool showError = false;
-  bool showPassword = true;
-  bool loginLoading = false;
-  LoginResponse registerResponse = LoginResponse();
-  Future login() async {
-    if (_passwordController.text.isEmpty || _emailController.text.isEmpty) {
+  bool changingPassword = false;
+  Future newPassword() async {
+    if (_passwordController.text.isNotEmpty) {
       setState(() {
-        showError = true;
-      });
-      return;
-    } else {
-      setState(() {
-        loginLoading = true;
+        changingPassword = true;
       });
       await AuthenticationServices()
-          .loginApi(
-        email: _emailController.text,
-        password: _passwordController.text,
+          .setNewPassword(
+        email: widget.email,
+        password: _passwordController.text.trim(),
       )
-          .then((value) async {
-        if (value.success) {
-          log(value.success.toString());
-          log(json.encode(value).toString());
-          // log(json.encode(value).toString());
-          Map<String, dynamic> info = Jwt.parseJwt(value.token);
-          log(info['address'].toString());
-          info.putIfAbsent('address', () => null);
-          log(info.toString());
-          log(info['id'].toString());
-          await SharedPref().save('user', info);
-          String tempUser = await readData(key: 'user');
+          .then((value) {
+        if (value) {
           setState(() {
-            user = UserInfo.fromJson(json.decode(tempUser));
+            changingPassword = true;
           });
-          print(info);
-          await FriendsServices()
-              .userInfoApi(userId: info['id'].toString())
-              .then((value1) async {
-            log(value1.address);
-            setState(() {
-              user.address = value1.address;
-              info['address'] = user.address;
-            });
-            await SharedPref().save('user', info);
-            log(user.toString() + user.runtimeType.toString() + user.address);
-            Future.delayed(Duration(milliseconds: 500), () async {
-              setState(() {
-                loginLoading = false;
-              });
-              Navigator.push(
-                  context,
-                  PageTransition(
-                      duration: Duration(milliseconds: 600),
-                      type: PageTransitionType.fade,
-                      child: HomeScreen()));
-            });
-          });
+          Navigator.push(
+              context,
+              PageTransition(
+                  duration: Duration(milliseconds: 600),
+                  type: PageTransitionType.fade,
+                  child: SignIn()));
         }
-      }).onError((error, stackTrace) {
-        log(error.toString());
-        setState(() {
-          loginLoading = false;
-        });
       });
     }
   }
@@ -108,7 +70,7 @@ class _SignInState extends State<SignIn> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Login",
+                  "Enter New Password",
                   style: TextStyle(
                     fontFamily: "GE_SS_TWO",
                     fontWeight: FontWeight.w500,
@@ -122,58 +84,6 @@ class _SignInState extends State<SignIn> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                    "Email",
-                    style: TextStyle(
-                      fontFamily: "GE_SS_TWO",
-                      fontWeight: FontWeight.w300,
-                      fontSize: 18,
-                      color: Color(0xff000000),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: _emailController,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'Roboto',
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.only(left: 20.0, right: 20),
-                      hintText: 'Your Email',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                showError
-                    ? Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ErrorText(),
-                      )
-                    : Container()
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                    "Password",
-                    style: TextStyle(
-                      fontFamily: "GE_SS_TWO",
-                      fontWeight: FontWeight.w300,
-                      fontSize: 18,
-                      color: Color(0xff000000),
-                    ),
-                  ),
-                ),
-                Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
                     controller: _passwordController,
@@ -186,7 +96,7 @@ class _SignInState extends State<SignIn> {
                     ),
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.only(left: 20.0, right: 20),
-                      hintText: 'Your Password',
+                      hintText: 'Your new Password',
                       border: OutlineInputBorder(),
                       suffixIcon: IconButton(
                         icon: !showPassword
@@ -222,7 +132,7 @@ class _SignInState extends State<SignIn> {
                 highlightColor: Colors.transparent,
                 hoverColor: Colors.transparent,
                 focusColor: Colors.transparent,
-                onTap: login,
+                onTap: newPassword,
                 child: Container(
                   height: height / 16,
                   width: width / 2.25,
@@ -238,13 +148,13 @@ class _SignInState extends State<SignIn> {
                     borderRadius: BorderRadius.circular(20.00),
                   ),
                   child: Center(
-                    child: loginLoading
+                    child: changingPassword
                         ? SpinKitWave(
                             color: Colors.white,
                             size: 14,
                           )
                         : Text(
-                            "Login",
+                            "Send Code",
                             style: TextStyle(
                               fontFamily: "GE_SS_TWO",
                               fontWeight: FontWeight.w300,
@@ -255,46 +165,6 @@ class _SignInState extends State<SignIn> {
                   ),
                 ),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Don't have an account? ",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: "GE_SS_TWO",
-                    fontWeight: FontWeight.w300,
-                    fontSize: 14,
-                    color: Color(0xff575d63),
-                  ),
-                ),
-                InkWell(
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  focusColor: Colors.transparent,
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                            duration: Duration(milliseconds: 600),
-                            type: PageTransitionType.fade,
-                            child: SignUp()));
-                  },
-                  child: Text(
-                    "Sign Up now!",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: "GE_SS_TWO",
-                      fontWeight: FontWeight.w300,
-                      fontSize: 14,
-                      color: Color(0xff575d63),
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ],
             ),
             Padding(
               padding: const EdgeInsets.only(top: 21.0),
@@ -309,10 +179,10 @@ class _SignInState extends State<SignIn> {
                       PageTransition(
                           duration: Duration(milliseconds: 600),
                           type: PageTransitionType.fade,
-                          child: ForgotPassword()));
+                          child: SignIn()));
                 },
                 child: Text(
-                  "Forgot Password?",
+                  "Go to Login",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: "GE_SS_TWO",

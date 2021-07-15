@@ -92,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
         applicationProvider.commentRemovedS(
             id: msg['commenterId'],
             postId: msg['postId'],
+            postOwner: msg['postOwner'],
             comment: msg['commentId']);
       });
       socket.on("commentDeleted", (msg) async {
@@ -99,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
         applicationProvider.commentRemoved(
           id: msg['commenterId'],
           postId: msg['postId'],
+          postOwner: msg['postOwner'],
           comment: msg['commentId'],
         );
       });

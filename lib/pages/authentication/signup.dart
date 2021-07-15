@@ -66,24 +66,12 @@ class _SignUpState extends State<SignUp> {
           log(value.text.toString());
         }
         if (value.created) {
-          setState(() {
-            user = UserInfo(
-              cover: value.user.cover,
-              email: value.user.email,
-              id: value.user.id,
-              image: value.user.image,
-              name: value.user.name,
-              address: value.user.address,
-              age: value.user.age.toString(),
-            );
-          });
-          await SharedPref().save('user', user.toString());
           Navigator.push(
               context,
               PageTransition(
                   duration: Duration(milliseconds: 600),
                   type: PageTransitionType.fade,
-                  child: HomeScreen()));
+                  child: SignIn()));
         }
         setState(() {
           registerLoading = false;
