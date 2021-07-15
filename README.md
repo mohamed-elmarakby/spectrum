@@ -18,7 +18,7 @@
     - [x] Chats List
     - [x] Inside Chat
     - [x] Groups List
-  - [ ] Profile:
+  - [x] Profile:
     - [x] My Profile
       - [x] Adding Post
         - [x] Upload Image to Post
