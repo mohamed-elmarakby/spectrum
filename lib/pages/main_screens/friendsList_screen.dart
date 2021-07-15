@@ -134,6 +134,7 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
                                           type: PageTransitionType.fade,
                                           child: ProfilePageScreen(
                                             isMine: e.id.sId == user.id,
+                                            chatId: e.chatId,
                                             userId: e.id.sId,
                                             isRequest: e.isRequest == null
                                                 ? false

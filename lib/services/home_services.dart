@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:graduation_project/constant/constant.dart';
 import 'package:graduation_project/main.dart';
+import 'package:graduation_project/models/InsideChatResponse_model.dart';
 import 'package:graduation_project/models/allChats_model.dart';
 import 'package:graduation_project/models/allGroups_model.dart';
 import 'package:graduation_project/models/allMyFriends_model.dart';
@@ -419,6 +420,31 @@ class HomeServices {
     return allGroupsModel;
   }
 
+  Future<InsideChatResponseModel> getChatMessages({String chatId}) async {
+    Dio dio = Dio();
+    String url = Constants().apiUrl + 'chat';
+    log(url);
+    log(chatId);
+    InsideChatResponseModel insideChatResponseModel = InsideChatResponseModel();
+    await dio
+        .get(
+      url,
+      options: Options(
+        headers: {
+          'chatId': chatId,
+        },
+      ),
+    )
+        .then(
+      (value) {
+        print(value.statusCode);
+        print(value.data);
+        insideChatResponseModel = InsideChatResponseModel.fromJson(value.data);
+      },
+    );
+    return insideChatResponseModel;
+  }
+
   Future addPostApi({
     String text,
     String image,
@@ -554,37 +580,29 @@ class HomeServices {
         'id': user.id,
         'name': name,
         'email': email,
-        'oldPassword': oldPassword,
-        'newPassword': newPassword,
+        'oldPass': oldPassword,
+        'newPass': newPassword,
         'address': address,
-      })
+      }),
+      'pImage': pImage == null
+          ? null
+          : await MultipartFile.fromFileSync(
+              pImage.path,
+              filename: pImageName,
+              contentType: MediaType("image", "jpg"),
+            ),
+      'cImage': cImage == null
+          ? null
+          : await MultipartFile.fromFileSync(
+              cImage.path,
+              filename: cImageName,
+              contentType: MediaType("image", "jpg"),
+            ),
     });
-    await formData.files.add(MapEntry(
-        'pImage',
-        pImage == null
-            ? null
-            : await MultipartFile.fromFile(
-                pImage.path,
-                filename: pImageName,
-                contentType: MediaType("image", "jpg"),
-              )));
-    await formData.files.add(MapEntry(
-        'cImage',
-        cImage == null
-            ? null
-            : await MultipartFile.fromFile(
-                cImage.path,
-                filename: cImageName,
-                contentType: MediaType("image", "jpg"),
-              )));
     log(user.id.toString());
     log(formData.toString());
-    log(formData.files.toString());
     log(formData.fields.toString());
-    log(pImageName.toString());
-    log(pImage.path.toString());
-    log(cImageName.toString());
-    log(cImage.path.toString());
+    log(formData.files.toString());
 
     await dio
         .post(

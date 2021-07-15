@@ -93,6 +93,10 @@ class _BottomBarState extends State<BottomBar> {
                   setState(() {
                     widget.chosenPage = 1;
                   });
+                  setState(() {
+                    applicationProvider.gotChatMsg = false;
+                  });
+                  saveData(key: 'hasChatMsg', saved: "false");
                   Navigator.push(
                       context,
                       PageTransition(
@@ -106,6 +110,10 @@ class _BottomBarState extends State<BottomBar> {
                   children: [
                     Icon(
                       FontAwesomeIcons.facebookMessenger,
+                      color: applicationProvider.gotChatMsg == null ||
+                              applicationProvider.gotChatMsg == false
+                          ? Colors.black
+                          : Colors.red,
                     ),
                     Text('Chats', style: TextStyle()),
                   ],
@@ -147,10 +155,12 @@ class _BottomBarState extends State<BottomBar> {
                 ),
               ),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   setState(() {
                     widget.chosenPage = 3;
                   });
+                  applicationProvider.gotGroupMsg = false;
+                  await saveData(key: 'hasGroupMsg', saved: 'false');
                   Navigator.push(
                       context,
                       PageTransition(
@@ -164,6 +174,10 @@ class _BottomBarState extends State<BottomBar> {
                   children: [
                     Icon(
                       FontAwesomeIcons.users,
+                      color: applicationProvider.gotGroupMsg == null ||
+                              applicationProvider.gotGroupMsg == false
+                          ? Colors.black
+                          : Colors.red,
                     ),
                     Text('Groups', style: TextStyle()),
                   ],

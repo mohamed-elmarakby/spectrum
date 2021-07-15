@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:graduation_project/models/allGroups_model.dart';
+import 'package:graduation_project/pages/main_screens/insideChat_screen.dart';
+import 'package:graduation_project/services/home_services.dart';
+import 'package:page_transition/page_transition.dart';
 
 class GroupWidget extends StatefulWidget {
   Groups groups;
@@ -33,18 +36,35 @@ class _GroupWidgetState extends State<GroupWidget> {
               )),
             ),
             title: Text(widget.groups.name.toString()),
-            trailing: Container(
-              decoration: BoxDecoration(
-                color: Color(0xFF4F62C4),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 21, vertical: 12),
-                child: Text(
-                  'Enter',
-                  style: TextStyle(
-                    color: Colors.white,
+            trailing: GestureDetector(
+              onTap: () async {
+                await HomeServices()
+                    .getChatMessages(chatId: widget.groups.groupId)
+                    .then((value) {
+                  Navigator.push(
+                      context,
+                      PageTransition(
+                          duration: Duration(milliseconds: 600),
+                          type: PageTransitionType.fade,
+                          child: InsideChatScreen(
+                            insideChatResponseModel: value,
+                            isGroup: true,
+                          )));
+                });
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFF4F62C4),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 21, vertical: 12),
+                  child: Text(
+                    'Enter',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),

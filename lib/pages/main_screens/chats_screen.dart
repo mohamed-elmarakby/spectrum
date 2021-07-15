@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:graduation_project/main.dart';
 import 'package:graduation_project/models/allChats_model.dart';
+import 'package:graduation_project/pages/main_screens/home_screen.dart';
 import 'package:graduation_project/pages/main_screens/insideChat_screen.dart';
 import 'package:graduation_project/pages/profile/profile_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
@@ -14,9 +15,14 @@ import 'package:graduation_project/widgets/loading_shimmer.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
+_ChatsListScreenState chatsListScreenState;
+
 class ChatsListScreen extends StatefulWidget {
   @override
-  _ChatsListScreenState createState() => _ChatsListScreenState();
+  _ChatsListScreenState createState() {
+    chatsListScreenState = _ChatsListScreenState();
+    return chatsListScreenState;
+  }
 }
 
 class _ChatsListScreenState extends State<ChatsListScreen> {
@@ -51,72 +57,108 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
+    DateFormat dateFormat = DateFormat("dd-MM-yyyy HH:mm");
     double width = MediaQuery.of(context).size.width;
     ApplicationProvider applicationProvider =
         Provider.of<ApplicationProvider>(context, listen: false);
     return SafeArea(
-        child: Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        backgroundColor: Color(0xFF707070),
-        title: Text('Chats List'),
-      ),
-      body: loading
-          ? LoadingShimmer(width: width)
-          : Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: ListView(
-                  children: allChatsModel
-                      .map((e) => GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  PageTransition(
-                                      duration: Duration(milliseconds: 600),
-                                      type: PageTransitionType.fade,
-                                      child: InsideChatScreen(
-                                          // isMine: e.sId == user.id,
-                                          // userId: e.sId,
+        child: WillPopScope(
+      onWillPop: () {
+        return Navigator.push(
+            context,
+            PageTransition(
+                duration: Duration(milliseconds: 600),
+                type: PageTransitionType.fade,
+                child: HomeScreen()));
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        duration: Duration(milliseconds: 600),
+                        type: PageTransitionType.fade,
+                        child: HomeScreen()));
+              },
+              child: Icon(Icons.arrow_back)),
+          backgroundColor: Color(0xFF707070),
+          title: Text('Chats List'),
+        ),
+        body: loading
+            ? LoadingShimmer(width: width)
+            : Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: ListView(
+                    children: allChatsModel
+                        .map((e) => GestureDetector(
+                              onTap: () async {
+                                await HomeServices()
+                                    .getChatMessages(chatId: e.chat.sId)
+                                    .then((value) {
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          duration: Duration(milliseconds: 600),
+                                          type: PageTransitionType.fade,
+                                          child: InsideChatScreen(
+                                            insideChatResponseModel: value,
+                                            isGroup: false,
                                           )));
-                            },
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: Colors.transparent,
-                                child: e.senderId.image == null
-                                    ? Container()
-                                    : Container(
-                                        height:
-                                            MediaQuery.of(context).size.width /
-                                                2,
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: CachedNetworkImageProvider(
-                                                  e.senderId.image)),
-                                        ),
-                                      ),
+                                });
+                              },
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: Colors.transparent,
+                                  backgroundImage: CachedNetworkImageProvider(
+                                      e.senderId.image),
+                                  minRadius: 16,
+                                  maxRadius: 24,
+                                  // child: e.senderId.image == null
+                                  //     ? Container()
+                                  //     : Container(
+                                  //         height:
+                                  //             MediaQuery.of(context).size.width /
+                                  //                 2,
+                                  //         width:
+                                  //             MediaQuery.of(context).size.width,
+                                  //         decoration: BoxDecoration(
+                                  //           image: DecorationImage(
+                                  //               fit: BoxFit.cover,
+                                  //               image: CachedNetworkImageProvider(
+                                  //                   e.senderId.image)),
+                                  //         ),
+                                  //       ),
+                                ),
+                                subtitle: Text('${e.content.toString()}'),
+                                trailing: Text(
+                                  dateFormat
+                                      .format(DateTime.parse(e.date))
+                                      .toString(),
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12),
+                                ),
+                                title: Text(
+                                  e.chat.users
+                                      .firstWhere(
+                                          (element) => element.sId != user.id)
+                                      .name
+                                      .toString(),
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 16),
+                                ),
                               ),
-                              subtitle: Text('${e.content.toString()}'),
-                              trailing: Text(dateFormat
-                                  .format(DateTime.parse(e.date))
-                                  .toString()),
-                              title: Text(
-                                e.senderId.name.toString(),
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 16),
-                              ),
-                            ),
-                          ))
-                      .toList(),
+                            ))
+                        .toList(),
+                  ),
                 ),
               ),
-            ),
+      ),
     ));
   }
 }

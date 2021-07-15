@@ -36,7 +36,7 @@ class _MyPostWidgetState extends State<MyPostWidget> {
   Widget build(BuildContext context) {
     ApplicationProvider applicationProvider =
         Provider.of<ApplicationProvider>(context, listen: true);
-    DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
+    DateFormat dateFormat = DateFormat("dd-MM-yyyy HH:mm:ss");
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(

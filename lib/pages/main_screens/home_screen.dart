@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:graduation_project/constant/constant.dart';
 import 'package:graduation_project/main.dart';
+import 'package:graduation_project/models/InsideChatResponse_model.dart';
 import 'package:graduation_project/models/allOfCurrentUser_model.dart';
 import 'package:graduation_project/models/socket_models.dart/comment_added_socket_model.dart';
 import 'package:graduation_project/models/socket_models.dart/dislike_socket_model.dart';
@@ -55,6 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
       applicationProvider.getAllPosts();
       applicationProvider.getNotification();
       applicationProvider.getRequest();
+      applicationProvider.getChatMsg();
+      applicationProvider.getGroupMsg();
       applicationProvider.getAllUsers();
       applicationProvider.getAllMyFriends().then((value) {
         setState(() {
@@ -169,6 +172,10 @@ class _HomeScreenState extends State<HomeScreen> {
         log('newGbMsg: ');
         log(gbMessage.toString());
         log(ReceivedMessageSocketModel.fromJson(gbMessage).type.toString());
+        setState(() {
+          applicationProvider.gotGroupMsg = true;
+        });
+        saveData(key: 'hasGroupMsg', saved: "true");
       });
       socket.on("addRequestSent", (addRequestSent) {
         log('addRequestSent: ');
@@ -241,6 +248,24 @@ class _HomeScreenState extends State<HomeScreen> {
       socket.on("removingDone", (removingDone) {
         log('removingDone: ');
         log(removingDone.toString());
+      });
+      socket.on("msgRecieved", (msgRecieved) {
+        log('msgRecieved: ');
+        log(msgRecieved.toString());
+        Messages messages = Messages.fromJson(msgRecieved);
+        log('messages: ' + json.encode(messages));
+        setState(() {
+          applicationProvider.gotChatMsg = true;
+        });
+        saveData(key: 'hasChatMsg', saved: "true");
+      });
+      socket.on("joinedGroupS", (joinedGroupS) {
+        log('joinedGroupS: ');
+        log(joinedGroupS.toString());
+        setState(() {
+          applicationProvider.gotGroupMsg = true;
+        });
+        saveData(key: 'hasGroupMsg', saved: "true");
       });
       socket.on("youRemoved", (youRemoved) {
         log('youRemoved: ');

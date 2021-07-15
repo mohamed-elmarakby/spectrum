@@ -13,6 +13,7 @@ import 'package:graduation_project/models/allMyFriends_model.dart';
 import 'package:graduation_project/models/allOfCurrentUser_model.dart';
 import 'package:graduation_project/models/userInfo_model.dart';
 import 'package:graduation_project/pages/main_screens/home_screen.dart';
+import 'package:graduation_project/pages/main_screens/insideChat_screen.dart';
 import 'package:graduation_project/pages/profile/edit_profile_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/services/freinds_services.dart';
@@ -31,9 +32,11 @@ _ProfilePageScreenState profilePageScreenState;
 
 class ProfilePageScreen extends StatefulWidget {
   bool isMine;
+  String chatId;
   bool isRequest;
   String userId;
-  ProfilePageScreen({this.isRequest = false, this.isMine = true, this.userId});
+  ProfilePageScreen(
+      {this.chatId, this.isRequest = false, this.isMine = true, this.userId});
   @override
   _ProfilePageScreenState createState() {
     profilePageScreenState = _ProfilePageScreenState();
@@ -190,718 +193,500 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
       ),
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: load
-            ? ListView(
-                children: [
-                  ...List.generate(
-                      4,
-                      (index) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10.0, vertical: 4),
-                            child: SizedBox(
-                              height: 160.0,
-                              child: Shimmer.fromColors(
-                                baseColor: Colors.black.withOpacity(0.4),
-                                highlightColor: Colors.black.withOpacity(0.6),
-                                child: Card(
-                                  child: ListTile(
-                                    dense: true,
-                                    title: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Container(
-                                          width: width * 0.4,
-                                          child: Text(
-                                            '',
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(fontSize: 15.0),
-                                          ),
-                                        ),
-                                        Row(
-                                          children: <Widget>[
-                                            Text(
-                                              '',
-                                              // textDirection: ui.TextDirection.ltr,
-                                              style: TextStyle(
-                                                  fontFamily: "Arial"),
-                                            ),
-                                            SizedBox(
-                                              width: 5,
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                    leading: ClipRRect(
-                                      borderRadius: BorderRadius.circular(25.0),
-                                    ),
-                                    subtitle: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Container(
-                                          width: width * 0.4,
-                                          child: Text(
-                                            '',
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )),
-                ],
-              )
-            : SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
+        child: WillPopScope(
+          onWillPop: () {
+            return Navigator.pushReplacement(
+                context,
+                PageTransition(
+                    duration: Duration(milliseconds: 600),
+                    type: PageTransitionType.fade,
+                    child: HomeScreen()));
+          },
+          child: load
+              ? ListView(
                   children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * 0.35,
-                          child: Stack(
-                            children: [
-                              load
-                                  ? Container()
-                                  : GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => FullPhoto(
-                                                    url: widget.isMine
-                                                        ? user.cover
-                                                        : userInfoResponse
-                                                            .cover)));
-                                      },
-                                      child: CachedNetworkImage(
-                                        imageUrl: widget.isMine
-                                            ? user.cover
-                                            : userInfoResponse.cover,
-                                        useOldImageOnUrlChange: true,
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.25,
-                                        fit: BoxFit.cover,
+                    ...List.generate(
+                        4,
+                        (index) => Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10.0, vertical: 4),
+                              child: SizedBox(
+                                height: 160.0,
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.black.withOpacity(0.4),
+                                  highlightColor: Colors.black.withOpacity(0.6),
+                                  child: Card(
+                                    child: ListTile(
+                                      dense: true,
+                                      title: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Container(
+                                            width: width * 0.4,
+                                            child: Text(
+                                              '',
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(fontSize: 15.0),
+                                            ),
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              Text(
+                                                '',
+                                                // textDirection: ui.TextDirection.ltr,
+                                                style: TextStyle(
+                                                    fontFamily: "Arial"),
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                      leading: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(25.0),
+                                      ),
+                                      subtitle: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Container(
+                                            width: width * 0.4,
+                                            child: Text(
+                                              '',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                              Align(
-                                alignment: Alignment(0, 0.45),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => FullPhoto(
-                                                url: widget.isMine
-                                                    ? user.image
-                                                    : userInfoResponse.image)));
-                                  },
-                                  child: CircleAvatar(
-                                    minRadius: 20,
-                                    maxRadius: 45,
-                                    backgroundImage: CachedNetworkImageProvider(
-                                      widget.isMine
-                                          ? user.image
-                                          : userInfoResponse.image,
-                                    ),
                                   ),
                                 ),
                               ),
-                              Align(
-                                alignment: Alignment(0, 0.9),
-                                child: Padding(
-                                  padding: EdgeInsets.fromLTRB(0, 12, 0, 0),
-                                  child: AutoSizeText(
-                                    widget.isMine
-                                        ? user.name.toString()
-                                        : userInfoResponse.name.toString(),
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        widget.isMine
-                            ? Row(
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: GestureDetector(
+                            )),
+                  ],
+                )
+              : SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height * 0.35,
+                            child: Stack(
+                              children: [
+                                load
+                                    ? Container()
+                                    : GestureDetector(
                                         onTap: () {
                                           Navigator.push(
                                               context,
-                                              PageTransition(
-                                                  duration: Duration(
-                                                      milliseconds: 600),
-                                                  type: PageTransitionType.fade,
-                                                  child: EditProfileScreen()));
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      FullPhoto(
+                                                          url: widget.isMine
+                                                              ? user.cover
+                                                              : userInfoResponse
+                                                                  .cover)));
                                         },
-                                        child: Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.5,
+                                        child: CachedNetworkImage(
+                                          imageUrl: widget.isMine
+                                              ? user.cover
+                                              : userInfoResponse.cover,
+                                          useOldImageOnUrlChange: true,
+                                          width:
+                                              MediaQuery.of(context).size.width,
                                           height: MediaQuery.of(context)
                                                   .size
                                                   .height *
-                                              0.08,
-                                          decoration: BoxDecoration(
-                                            color: Colors.black,
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.all(8),
-                                            child: Center(
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    'Edit Profile',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 14),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 8.0),
-                                                    child: Icon(
-                                                      Icons.edit,
-                                                      size: 16,
-                                                      color: Colors.white,
+                                              0.25,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                Align(
+                                  alignment: Alignment(0, 0.45),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => FullPhoto(
+                                                  url: widget.isMine
+                                                      ? user.image
+                                                      : userInfoResponse
+                                                          .image)));
+                                    },
+                                    child: CircleAvatar(
+                                      minRadius: 20,
+                                      maxRadius: 45,
+                                      backgroundImage:
+                                          CachedNetworkImageProvider(
+                                        widget.isMine
+                                            ? user.image
+                                            : userInfoResponse.image,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment(0, 0.9),
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 12, 0, 0),
+                                    child: AutoSizeText(
+                                      widget.isMine
+                                          ? user.name.toString()
+                                          : userInfoResponse.name.toString(),
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          widget.isMine
+                              ? Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 1,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                PageTransition(
+                                                    duration: Duration(
+                                                        milliseconds: 600),
+                                                    type:
+                                                        PageTransitionType.fade,
+                                                    child:
+                                                        EditProfileScreen()));
+                                          },
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.5,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.08,
+                                            decoration: BoxDecoration(
+                                              color: Colors.black,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                            ),
+                                            child: Padding(
+                                              padding: EdgeInsets.all(8),
+                                              child: Center(
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Edit Profile',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 14),
                                                     ),
-                                                  ),
-                                                ],
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 8.0),
+                                                      child: Icon(
+                                                        Icons.edit,
+                                                        size: 16,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: GestureDetector(
-                                        onTap: () async {
-                                          socket.emit("customDisconnect",
-                                              {"id": user.id});
-                                          await SharedPref().remove('user');
-                                          Navigator.pushReplacement(
-                                              context,
-                                              PageTransition(
-                                                  duration: Duration(
-                                                      milliseconds: 600),
-                                                  type: PageTransitionType.fade,
-                                                  child: MyHomePage()));
-                                        },
-                                        child: Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.5,
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.08,
-                                          decoration: BoxDecoration(
-                                            color: Colors.red,
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.all(8),
-                                            child: Center(
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    'Sign Out',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 14),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 8.0),
-                                                    child: Icon(
-                                                      Icons.logout,
-                                                      size: 16,
-                                                      color: Colors.white,
+                                    Expanded(
+                                      flex: 1,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: GestureDetector(
+                                          onTap: () async {
+                                            socket.emit("customDisconnect",
+                                                {"id": user.id});
+                                            await SharedPref().remove('user');
+                                            Navigator.pushReplacement(
+                                                context,
+                                                PageTransition(
+                                                    duration: Duration(
+                                                        milliseconds: 600),
+                                                    type:
+                                                        PageTransitionType.fade,
+                                                    child: MyHomePage()));
+                                          },
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.5,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.08,
+                                            decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                            ),
+                                            child: Padding(
+                                              padding: EdgeInsets.all(8),
+                                              child: Center(
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Sign Out',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 14),
                                                     ),
-                                                  ),
-                                                ],
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 8.0),
+                                                      child: Icon(
+                                                        Icons.logout,
+                                                        size: 16,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              )
-                            : !applicationProvider.allMyFriends.any((element) =>
-                                    element.id.sId == widget.userId)
-                                ? alreadySent
-                                    ? Row(
-                                        children: [
-                                          Expanded(
-                                            flex: 1,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  //add friend request
-                                                  log(user.id.toString());
-                                                  log(widget.userId.toString());
-                                                  socket.emit("cancelRequest", {
-                                                    "sender": {"_id": user.id},
-                                                    "reciever": {
-                                                      "_id": widget.userId
-                                                    }
-                                                  });
-                                                  setState(() {
-                                                    alreadySent = false;
-                                                  });
-                                                  // Navigator.push(
-                                                  //     context,
-                                                  //     PageTransition(
-                                                  //         duration: Duration(
-                                                  //             milliseconds: 600),
-                                                  //         type: PageTransitionType.fade,
-                                                  //         child: EditProfileScreen()));
-                                                },
-                                                child: Container(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.5,
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.08,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    border: Border.all(
-                                                        color: Colors.red),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16),
-                                                  ),
-                                                  child: Padding(
-                                                    padding: EdgeInsets.all(8),
-                                                    child: Center(
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Text(
-                                                            'Cancel Request',
-                                                            style: TextStyle(
-                                                                color:
-                                                                    Colors.red,
-                                                                fontSize: 14),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    left: 8.0),
-                                                            child: Icon(
-                                                              FontAwesomeIcons
-                                                                  .userTimes,
-                                                              size: 16,
-                                                              color: Colors.red,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    : Row(
-                                        children: [
-                                          Expanded(
-                                            flex: 1,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  //add friend request
-                                                  log(user.id.toString());
-                                                  log(widget.userId.toString());
-                                                  socket.emit("addFriend", {
-                                                    "sender": {"_id": user.id},
-                                                    "reciever": {
-                                                      "_id": widget.userId
-                                                    }
-                                                  });
-
-                                                  setState(() {
-                                                    alreadySent = true;
-                                                  });
-                                                  // Navigator.push(
-                                                  //     context,
-                                                  //     PageTransition(
-                                                  //         duration: Duration(
-                                                  //             milliseconds: 600),
-                                                  //         type: PageTransitionType.fade,
-                                                  //         child: EditProfileScreen()));
-                                                },
-                                                child: Container(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.5,
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.08,
-                                                  decoration: BoxDecoration(
-                                                    color: Color(0xFF0E5FDA),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16),
-                                                  ),
-                                                  child: Padding(
-                                                    padding: EdgeInsets.all(8),
-                                                    child: Center(
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Text(
-                                                            'Add Friend',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 14),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    left: 8.0),
-                                                            child: Icon(
-                                                              FontAwesomeIcons
-                                                                  .userPlus,
-                                                              size: 16,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                : widget.isRequest
-                                    ? Row(
-                                        children: [
-                                          Expanded(
-                                            flex: 1,
-                                            child: GestureDetector(
-                                              onTap: () async {
-                                                setState(() {
-                                                  accepting = true;
-                                                });
-                                                log(widget.userId.toString());
-                                                log(user.id.toString());
-                                                socket.emit("confirmRequest", {
-                                                  "sender": {
-                                                    "_id": widget.userId
-                                                  },
-                                                  "reciever": {"_id": user.id}
-                                                });
-                                                Future.delayed(
-                                                    Duration(milliseconds: 500),
-                                                    () async {
-                                                  await applicationProvider
-                                                      .getAllPosts();
-                                                  await applicationProvider
-                                                      .getAllMyFriends()
-                                                      .then((value) {
-                                                    Navigator.pushReplacement(
-                                                        context,
-                                                        PageTransition(
-                                                            duration: Duration(
-                                                                milliseconds:
-                                                                    600),
-                                                            type:
-                                                                PageTransitionType
-                                                                    .fade,
-                                                            child:
-                                                                ProfilePageScreen(
-                                                              isMine: false,
-                                                              isRequest: false,
-                                                              userId:
-                                                                  widget.userId,
-                                                            )));
-                                                  });
-                                                });
-                                              },
+                                  ],
+                                )
+                              : !applicationProvider.allMyFriends.any(
+                                      (element) =>
+                                          element.id.sId == widget.userId)
+                                  ? alreadySent
+                                      ? Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 1,
                                               child: Padding(
                                                 padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8.0,
-                                                        vertical: 8),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    color: Color(0xFF0E5FDA),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16),
-                                                  ),
-                                                  child: Padding(
-                                                    padding: EdgeInsets.all(8),
-                                                    child: Center(
-                                                      child: accepting
-                                                          ? SpinKitWave(
-                                                              color:
-                                                                  Colors.white,
-                                                              size: 14,
-                                                            )
-                                                          : Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              children: [
-                                                                Text(
-                                                                  'Accept',
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      fontSize:
-                                                                          14),
-                                                                ),
-                                                                Padding(
-                                                                  padding: const EdgeInsets
+                                                    const EdgeInsets.all(8.0),
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    //add friend request
+                                                    log(user.id.toString());
+                                                    log(widget.userId
+                                                        .toString());
+                                                    socket
+                                                        .emit("cancelRequest", {
+                                                      "sender": {
+                                                        "_id": user.id
+                                                      },
+                                                      "reciever": {
+                                                        "_id": widget.userId
+                                                      }
+                                                    });
+                                                    setState(() {
+                                                      alreadySent = false;
+                                                    });
+                                                    // Navigator.push(
+                                                    //     context,
+                                                    //     PageTransition(
+                                                    //         duration: Duration(
+                                                    //             milliseconds: 600),
+                                                    //         type: PageTransitionType.fade,
+                                                    //         child: EditProfileScreen()));
+                                                  },
+                                                  child: Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.5,
+                                                    height:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.08,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      border: Border.all(
+                                                          color: Colors.red),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              16),
+                                                    ),
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsets.all(8),
+                                                      child: Center(
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Text(
+                                                              'Cancel Request',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .red,
+                                                                  fontSize: 14),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
                                                                           .only(
                                                                       left:
                                                                           8.0),
-                                                                  child: Icon(
-                                                                    Icons
-                                                                        .person_add,
-                                                                    size: 16,
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            flex: 1,
-                                            child: GestureDetector(
-                                              onTap: () async {
-                                                log(widget.userId.toString());
-                                                log(user.id.toString());
-                                                socket.emit("rejectRequest", {
-                                                  "sender": {
-                                                    "_id": widget.userId
-                                                  },
-                                                  "reciever": {"_id": user.id}
-                                                });
-                                                Future.delayed(
-                                                    Duration(milliseconds: 500),
-                                                    () async {
-                                                  await applicationProvider
-                                                      .getAllPosts();
-                                                  await applicationProvider
-                                                      .getAllMyFriends()
-                                                      .then((value) {
-                                                    Navigator.pushReplacement(
-                                                        context,
-                                                        PageTransition(
-                                                            duration: Duration(
-                                                                milliseconds:
-                                                                    600),
-                                                            type:
-                                                                PageTransitionType
-                                                                    .fade,
-                                                            child:
-                                                                ProfilePageScreen(
-                                                              isMine: false,
-                                                              isRequest: false,
-                                                              userId:
-                                                                  widget.userId,
-                                                            )));
-                                                  });
-                                                });
-                                              },
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8.0,
-                                                        vertical: 8),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16),
-                                                    border: Border.all(
-                                                        color: Colors.red),
-                                                  ),
-                                                  child: Padding(
-                                                    padding: EdgeInsets.all(8),
-                                                    child: Center(
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Text(
-                                                            'Reject',
-                                                            style: TextStyle(
+                                                              child: Icon(
+                                                                FontAwesomeIcons
+                                                                    .userTimes,
+                                                                size: 16,
                                                                 color:
                                                                     Colors.red,
-                                                                fontSize: 14),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    left: 8.0),
-                                                            child: Icon(
-                                                              Icons
-                                                                  .person_remove,
-                                                              size: 16,
-                                                              color: Colors.red,
+                                                              ),
                                                             ),
-                                                          ),
-                                                        ],
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      )
-                                    : Row(
-                                        children: [
-                                          Expanded(
-                                            flex: 1,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  // go into chat
-                                                  // Navigator.push(
-                                                  //     context,
-                                                  //     PageTransition(
-                                                  //         duration: Duration(
-                                                  //             milliseconds: 600),
-                                                  //         type: PageTransitionType.fade,
-                                                  //         child: EditProfileScreen()));
-                                                },
-                                                child: Container(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.5,
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.08,
-                                                  decoration: BoxDecoration(
-                                                    color: Color(0xFF0E5FDA),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16),
-                                                  ),
-                                                  child: Padding(
-                                                    padding: EdgeInsets.all(8),
-                                                    child: Center(
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Text(
-                                                            'Message',
-                                                            style: TextStyle(
+                                          ],
+                                        )
+                                      : Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 1,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    //add friend request
+                                                    log(user.id.toString());
+                                                    log(widget.userId
+                                                        .toString());
+                                                    socket.emit("addFriend", {
+                                                      "sender": {
+                                                        "_id": user.id
+                                                      },
+                                                      "reciever": {
+                                                        "_id": widget.userId
+                                                      }
+                                                    });
+
+                                                    setState(() {
+                                                      alreadySent = true;
+                                                    });
+                                                    // Navigator.push(
+                                                    //     context,
+                                                    //     PageTransition(
+                                                    //         duration: Duration(
+                                                    //             milliseconds: 600),
+                                                    //         type: PageTransitionType.fade,
+                                                    //         child: EditProfileScreen()));
+                                                  },
+                                                  child: Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.5,
+                                                    height:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.08,
+                                                    decoration: BoxDecoration(
+                                                      color: Color(0xFF0E5FDA),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              16),
+                                                    ),
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsets.all(8),
+                                                      child: Center(
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Text(
+                                                              'Add Friend',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 14),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      left:
+                                                                          8.0),
+                                                              child: Icon(
+                                                                FontAwesomeIcons
+                                                                    .userPlus,
+                                                                size: 16,
                                                                 color: Colors
                                                                     .white,
-                                                                fontSize: 14),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    left: 8.0),
-                                                            child: Icon(
-                                                              FontAwesomeIcons
-                                                                  .facebookMessenger,
-                                                              size: 16,
-                                                              color:
-                                                                  Colors.white,
+                                                              ),
                                                             ),
-                                                          ),
-                                                        ],
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                          Expanded(
-                                            flex: 1,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
+                                          ],
+                                        )
+                                  : widget.isRequest
+                                      ? Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 1,
                                               child: GestureDetector(
-                                                onTap: () {
-                                                  // unfriend user
-                                                  socket.emit("removeFriend", {
-                                                    "remover": user.id,
-                                                    "removed": widget.userId
+                                                onTap: () async {
+                                                  setState(() {
+                                                    accepting = true;
+                                                  });
+                                                  log(widget.userId.toString());
+                                                  log(user.id.toString());
+                                                  socket
+                                                      .emit("confirmRequest", {
+                                                    "sender": {
+                                                      "_id": widget.userId
+                                                    },
+                                                    "reciever": {"_id": user.id}
                                                   });
                                                   Future.delayed(
                                                       Duration(
@@ -932,132 +717,158 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                     });
                                                   });
                                                 },
-                                                child: Container(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.5,
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.08,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    border: Border.all(
-                                                        color: Colors.red),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16),
-                                                  ),
-                                                  child: Padding(
-                                                    padding: EdgeInsets.all(8),
-                                                    child: Center(
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Text(
-                                                            'Unfriend',
-                                                            style: TextStyle(
-                                                                color:
-                                                                    Colors.red,
-                                                                fontSize: 14),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    left: 8.0),
-                                                            child: Icon(
-                                                              FontAwesomeIcons
-                                                                  .userTimes,
-                                                              size: 16,
-                                                              color: Colors.red,
-                                                            ),
-                                                          ),
-                                                        ],
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 8.0,
+                                                      vertical: 8),
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Color(0xFF0E5FDA),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              16),
+                                                    ),
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsets.all(8),
+                                                      child: Center(
+                                                        child: accepting
+                                                            ? SpinKitWave(
+                                                                color: Colors
+                                                                    .white,
+                                                                size: 14,
+                                                              )
+                                                            : Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
+                                                                children: [
+                                                                  Text(
+                                                                    'Accept',
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontSize:
+                                                                            14),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                            .only(
+                                                                        left:
+                                                                            8.0),
+                                                                    child: Icon(
+                                                                      Icons
+                                                                          .person_add,
+                                                                      size: 16,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                      ],
-                    ),
-                    widget.isMine
-                        ? Padding(
-                            padding: EdgeInsets.all(12),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              decoration: BoxDecoration(
-                                color: Color(0x00EEEEEE),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: Color(0x4D707070),
-                                ),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(0),
-                                    shape: BoxShape.rectangle,
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      TextFormField(
-                                        controller: _postTextController,
-                                        obscureText: false,
-                                        decoration: InputDecoration(
-                                          hintText: 'What\'s on your mind?',
-                                          hintStyle: TextStyle(
-                                            color: Color(0xFF707070)
-                                                .withOpacity(0.75),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color(0x4D707070),
-                                              width: 1,
+                                            Expanded(
+                                              flex: 1,
+                                              child: GestureDetector(
+                                                onTap: () async {
+                                                  log(widget.userId.toString());
+                                                  log(user.id.toString());
+                                                  socket.emit("rejectRequest", {
+                                                    "sender": {
+                                                      "_id": widget.userId
+                                                    },
+                                                    "reciever": {"_id": user.id}
+                                                  });
+                                                  Future.delayed(
+                                                      Duration(
+                                                          milliseconds: 500),
+                                                      () async {
+                                                    await applicationProvider
+                                                        .getAllPosts();
+                                                    await applicationProvider
+                                                        .getAllMyFriends()
+                                                        .then((value) {
+                                                      Navigator.pushReplacement(
+                                                          context,
+                                                          PageTransition(
+                                                              duration: Duration(
+                                                                  milliseconds:
+                                                                      600),
+                                                              type:
+                                                                  PageTransitionType
+                                                                      .fade,
+                                                              child:
+                                                                  ProfilePageScreen(
+                                                                isMine: false,
+                                                                isRequest:
+                                                                    false,
+                                                                userId: widget
+                                                                    .userId,
+                                                              )));
+                                                    });
+                                                  });
+                                                },
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 8.0,
+                                                      vertical: 8),
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              16),
+                                                      border: Border.all(
+                                                          color: Colors.red),
+                                                    ),
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsets.all(8),
+                                                      child: Center(
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Text(
+                                                              'Reject',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .red,
+                                                                  fontSize: 14),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      left:
+                                                                          8.0),
+                                                              child: Icon(
+                                                                Icons
+                                                                    .person_remove,
+                                                                size: 16,
+                                                                color:
+                                                                    Colors.red,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
                                             ),
-                                            borderRadius: BorderRadius.only(
-                                              bottomLeft: Radius.circular(12),
-                                              bottomRight: Radius.circular(12),
-                                              topLeft: Radius.circular(12),
-                                              topRight: Radius.circular(12),
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color(0x4D707070),
-                                              width: 1,
-                                            ),
-                                            borderRadius: BorderRadius.only(
-                                              bottomLeft: Radius.circular(12),
-                                              bottomRight: Radius.circular(12),
-                                              topLeft: Radius.circular(12),
-                                              topRight: Radius.circular(12),
-                                            ),
-                                          ),
-                                        ),
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                        ),
-                                        textAlign: TextAlign.start,
-                                        maxLines: 3,
-                                      ),
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(0, 12, 0, 0),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.max,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
+                                          ],
+                                        )
+                                      : Row(
                                           children: [
                                             Expanded(
                                               flex: 1,
@@ -1065,17 +876,53 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                 padding:
                                                     const EdgeInsets.all(8.0),
                                                 child: GestureDetector(
-                                                  onTap: () {
-                                                    getImage();
+                                                  onTap: () async {
+                                                    await HomeServices()
+                                                        .getChatMessages(
+                                                            chatId: widget
+                                                                        .chatId ==
+                                                                    null
+                                                                ? applicationProvider
+                                                                    .allMyFriends
+                                                                    .firstWhere((element) =>
+                                                                        element
+                                                                            .id
+                                                                            .sId ==
+                                                                        widget
+                                                                            .userId)
+                                                                    .chatId
+                                                                : widget.chatId)
+                                                        .then((value) {
+                                                      Navigator.push(
+                                                          context,
+                                                          PageTransition(
+                                                              duration: Duration(
+                                                                  milliseconds:
+                                                                      600),
+                                                              type:
+                                                                  PageTransitionType
+                                                                      .fade,
+                                                              child:
+                                                                  InsideChatScreen(
+                                                                insideChatResponseModel:
+                                                                    value,
+                                                                isGroup: false,
+                                                              )));
+                                                    });
                                                   },
                                                   child: Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.5,
                                                     height:
                                                         MediaQuery.of(context)
                                                                 .size
                                                                 .height *
                                                             0.08,
                                                     decoration: BoxDecoration(
-                                                      color: Colors.black,
+                                                      color: Color(0xFF0E5FDA),
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               16),
@@ -1090,7 +937,7 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                                   .center,
                                                           children: [
                                                             Text(
-                                                              'Upload Image',
+                                                              'Message',
                                                               style: TextStyle(
                                                                   color: Colors
                                                                       .white,
@@ -1104,10 +951,10 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                                           8.0),
                                                               child: Icon(
                                                                 FontAwesomeIcons
-                                                                    .upload,
+                                                                    .facebookMessenger,
+                                                                size: 16,
                                                                 color: Colors
                                                                     .white,
-                                                                size: 16,
                                                               ),
                                                             ),
                                                           ],
@@ -1125,30 +972,92 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                     const EdgeInsets.all(8.0),
                                                 child: GestureDetector(
                                                   onTap: () {
-                                                    post();
+                                                    // unfriend user
+                                                    socket.emit(
+                                                        "removeFriend", {
+                                                      "remover": user.id,
+                                                      "removed": widget.userId
+                                                    });
+                                                    Future.delayed(
+                                                        Duration(
+                                                            milliseconds: 500),
+                                                        () async {
+                                                      await applicationProvider
+                                                          .getAllPosts();
+                                                      await applicationProvider
+                                                          .getAllMyFriends()
+                                                          .then((value) {
+                                                        Navigator
+                                                            .pushReplacement(
+                                                                context,
+                                                                PageTransition(
+                                                                    duration: Duration(
+                                                                        milliseconds:
+                                                                            600),
+                                                                    type: PageTransitionType
+                                                                        .fade,
+                                                                    child:
+                                                                        ProfilePageScreen(
+                                                                      isMine:
+                                                                          false,
+                                                                      isRequest:
+                                                                          false,
+                                                                      userId: widget
+                                                                          .userId,
+                                                                    )));
+                                                      });
+                                                    });
                                                   },
                                                   child: Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.5,
                                                     height:
                                                         MediaQuery.of(context)
                                                                 .size
                                                                 .height *
                                                             0.08,
                                                     decoration: BoxDecoration(
-                                                      color: Color(0xFF4F62C4),
+                                                      color: Colors.white,
+                                                      border: Border.all(
+                                                          color: Colors.red),
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               16),
                                                     ),
                                                     child: Padding(
                                                       padding:
-                                                          EdgeInsets.all(4),
+                                                          EdgeInsets.all(8),
                                                       child: Center(
-                                                        child: Text(
-                                                          'Post',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontSize: 14),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Text(
+                                                              'Unfriend',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .red,
+                                                                  fontSize: 14),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      left:
+                                                                          8.0),
+                                                              child: Icon(
+                                                                FontAwesomeIcons
+                                                                    .userTimes,
+                                                                size: 16,
+                                                                color:
+                                                                    Colors.red,
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ),
                                                     ),
@@ -1158,98 +1067,278 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                             ),
                                           ],
                                         ),
-                                      )
-                                    ],
+                        ],
+                      ),
+                      widget.isMine
+                          ? Padding(
+                              padding: EdgeInsets.all(12),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  color: Color(0x00EEEEEE),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: Color(0x4D707070),
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(0),
+                                      shape: BoxShape.rectangle,
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        TextFormField(
+                                          controller: _postTextController,
+                                          obscureText: false,
+                                          decoration: InputDecoration(
+                                            hintText: 'What\'s on your mind?',
+                                            hintStyle: TextStyle(
+                                              color: Color(0xFF707070)
+                                                  .withOpacity(0.75),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                color: Color(0x4D707070),
+                                                width: 1,
+                                              ),
+                                              borderRadius: BorderRadius.only(
+                                                bottomLeft: Radius.circular(12),
+                                                bottomRight:
+                                                    Radius.circular(12),
+                                                topLeft: Radius.circular(12),
+                                                topRight: Radius.circular(12),
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                color: Color(0x4D707070),
+                                                width: 1,
+                                              ),
+                                              borderRadius: BorderRadius.only(
+                                                bottomLeft: Radius.circular(12),
+                                                bottomRight:
+                                                    Radius.circular(12),
+                                                topLeft: Radius.circular(12),
+                                                topRight: Radius.circular(12),
+                                              ),
+                                            ),
+                                          ),
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                          textAlign: TextAlign.start,
+                                          maxLines: 3,
+                                        ),
+                                        Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(0, 12, 0, 0),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Expanded(
+                                                flex: 1,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      getImage();
+                                                    },
+                                                    child: Container(
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height *
+                                                              0.08,
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.black,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(16),
+                                                      ),
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsets.all(8),
+                                                        child: Center(
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Text(
+                                                                'Upload Image',
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontSize:
+                                                                        14),
+                                                              ),
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        left:
+                                                                            8.0),
+                                                                child: Icon(
+                                                                  FontAwesomeIcons
+                                                                      .upload,
+                                                                  color: Colors
+                                                                      .white,
+                                                                  size: 16,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 1,
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      post();
+                                                    },
+                                                    child: Container(
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height *
+                                                              0.08,
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            Color(0xFF4F62C4),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(16),
+                                                      ),
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsets.all(4),
+                                                        child: Center(
+                                                          child: Text(
+                                                            'Post',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 14),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          )
-                        : Container(),
-                    widget.isMine
-                        ? applicationProvider.myPosts.isEmpty
-                            ? Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Center(
-                                  child: Text(
-                                    'You Have No Posts Yet',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              )
-                            : Container(
-                                width: MediaQuery.of(context).size.width,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(0),
-                                  shape: BoxShape.rectangle,
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: applicationProvider.myPosts
-                                      .map((e) => MyPostWidget(
-                                            post: e,
-                                          ))
-                                      .toList(),
-                                ),
-                              )
-                        : widget.isRequest
-                            ? Container(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 20.0),
+                            )
+                          : Container(),
+                      widget.isMine
+                          ? applicationProvider.myPosts.isEmpty
+                              ? Padding(
+                                  padding: const EdgeInsets.all(8.0),
                                   child: Center(
-                                    child: Text('Accept Friend to see posts'),
-                                  ),
-                                ),
-                              )
-                            : !applicationProvider.allMyFriends.any((element) =>
-                                    element.id.sId == widget.userId)
-                                ? Container(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 20.0),
-                                      child: Center(
-                                        child: Text('Add Friend to see posts'),
+                                    child: Text(
+                                      'You Have No Posts Yet',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18,
                                       ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                  )
-                                : applicationProvider.someUserPosts.isEmpty
-                                    ? Padding(
-                                        padding: const EdgeInsets.all(8.0),
+                                  ),
+                                )
+                              : Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(0),
+                                    shape: BoxShape.rectangle,
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: applicationProvider.myPosts
+                                        .map((e) => MyPostWidget(
+                                              post: e,
+                                            ))
+                                        .toList(),
+                                  ),
+                                )
+                          : widget.isRequest
+                              ? Container(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 20.0),
+                                    child: Center(
+                                      child: Text('Accept Friend to see posts'),
+                                    ),
+                                  ),
+                                )
+                              : !applicationProvider.allMyFriends.any(
+                                      (element) =>
+                                          element.id.sId == widget.userId)
+                                  ? Container(
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 20.0),
                                         child: Center(
-                                          child: Text(
-                                            'This User has No Posts Yet',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 18,
+                                          child:
+                                              Text('Add Friend to see posts'),
+                                        ),
+                                      ),
+                                    )
+                                  : applicationProvider.someUserPosts.isEmpty
+                                      ? Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Center(
+                                            child: Text(
+                                              'This User has No Posts Yet',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 18,
+                                              ),
+                                              textAlign: TextAlign.center,
                                             ),
-                                            textAlign: TextAlign.center,
                                           ),
-                                        ),
-                                      )
-                                    : Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(0),
-                                          shape: BoxShape.rectangle,
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.max,
-                                          children:
-                                              applicationProvider.someUserPosts
-                                                  .map((e) => Post(
-                                                        post: e,
-                                                      ))
-                                                  .toList(),
-                                        ),
-                                      )
-                  ],
+                                        )
+                                      : Container(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(0),
+                                            shape: BoxShape.rectangle,
+                                          ),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: applicationProvider
+                                                .someUserPosts
+                                                .map((e) => Post(
+                                                      post: e,
+                                                    ))
+                                                .toList(),
+                                          ),
+                                        )
+                    ],
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }

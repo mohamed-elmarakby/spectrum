@@ -6,11 +6,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:graduation_project/main.dart';
+import 'package:graduation_project/models/token_decryption_model.dart';
 import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/services/freinds_services.dart';
 import 'package:graduation_project/services/home_services.dart';
+import 'package:graduation_project/sharedPreference.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import './profile_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
   EditProfileScreen({Key key}) : super(key: key);
@@ -215,12 +219,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(9),
-                          child: CachedNetworkImage(
-                            imageUrl: user.image,
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height * 0.25,
-                            fit: BoxFit.cover,
-                          ),
+                          child: profileFile == null
+                              ? CachedNetworkImage(
+                                  imageUrl: user.image,
+                                  width: MediaQuery.of(context).size.width,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.25,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.file(profileFile),
                         ),
                       )
                     ],
@@ -245,12 +252,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(9),
-                          child: CachedNetworkImage(
-                            imageUrl: user.cover,
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height * 0.25,
-                            fit: BoxFit.cover,
-                          ),
+                          child: coverFile == null
+                              ? CachedNetworkImage(
+                                  imageUrl: user.cover,
+                                  width: MediaQuery.of(context).size.width,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.25,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.file(coverFile),
                         ),
                       )
                     ],
@@ -479,8 +489,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     });
                     await HomeServices()
                         .updateProfile(
-                      cImage: profileFile,
-                      pImage: coverFile,
+                      cImage: coverFile,
+                      pImage: profileFile,
                       address: _addressController.text.trim().isEmpty
                           ? null
                           : _addressController.text.trim(),
@@ -500,10 +510,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         .then((value) async {
                       await FriendsServices()
                           .userInfoApi(userId: user.id)
-                          .then((value) {
+                          .then((value) async {
+                        Map<String, dynamic> info = {
+                          'id': user.id,
+                          'name': value.name,
+                          'email': value.email,
+                          'image': value.image,
+                          'cover': value.cover,
+                          'address': value.address,
+                        };
+
+                        await SharedPref().save('user', info);
+                        String tempUser = await readData(key: 'user');
                         setState(() {
+                          user = UserInfo.fromJson(json.decode(tempUser));
                           loading = false;
                         });
+                        Navigator.pushReplacement(
+                            context,
+                            PageTransition(
+                                duration: Duration(milliseconds: 600),
+                                type: PageTransitionType.fade,
+                                child: ProfilePageScreen(
+                                  userId: user.id,
+                                  isMine: true,
+                                )));
                       });
                     });
                   },

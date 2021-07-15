@@ -73,7 +73,14 @@ class _FriendWidgetState extends State<FriendWidget> {
                               await applicationProvider.getAllPosts();
                               await applicationProvider
                                   .getAllMyFriends()
-                                  .then((value) {});
+                                  .then((value) {
+                                if (friendsListScreenState.mounted) {
+                                  friendsListScreenState.setState(() {
+                                    friendsListScreenState.loading = true;
+                                    friendsListScreenState.c();
+                                  });
+                                }
+                              });
                             });
                           },
                           child: Padding(
@@ -135,7 +142,14 @@ class _FriendWidgetState extends State<FriendWidget> {
                               await applicationProvider.getAllPosts();
                               await applicationProvider
                                   .getAllMyFriends()
-                                  .then((value) {});
+                                  .then((value) {
+                                if (friendsListScreenState.mounted) {
+                                  friendsListScreenState.setState(() {
+                                    friendsListScreenState.loading = true;
+                                    friendsListScreenState.c();
+                                  });
+                                }
+                              });
                             });
                           },
                           child: Padding(

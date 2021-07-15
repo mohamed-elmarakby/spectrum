@@ -9,10 +9,12 @@ import 'package:graduation_project/main.dart';
 import 'package:graduation_project/models/allOfCurrentUser_model.dart';
 import 'package:graduation_project/models/socket_models.dart/comment_added_socket_model.dart';
 import 'package:graduation_project/models/socket_models.dart/user_info_socket_model.dart';
+import 'package:graduation_project/pages/main_screens/home_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/services/home_services.dart';
 import 'package:graduation_project/widgets/comment.dart';
 import 'package:graduation_project/widgets/post_widget.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -115,159 +117,168 @@ class _PostScreenState extends State<PostScreen> {
     }
 
     return SafeArea(
-        child: Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: true,
-        backgroundColor: Color(0xFF707070),
-        title: Text(applicationProvider
-            .posts[applicationProvider.posts
-                .indexWhere((element) => element.sId == widget.post.sId)]
-            .authorId
-            .name
-            .toString()),
-      ),
-      body: ListView(
-        children: [
-          Post(
-            insidePost: true,
-            post: applicationProvider.posts[applicationProvider.posts
-                .indexWhere((element) => element.sId == widget.post.sId)],
-          ),
-          applicationProvider
-                  .posts[applicationProvider.posts
-                      .indexWhere((element) => element.sId == widget.post.sId)]
-                  .comments
-                  .isEmpty
-              ? Padding(
-                  padding: const EdgeInsets.all(21),
-                  child: Center(
-                    child: Text(
-                      "No Comments Yet",
-                      style: TextStyle(
-                        fontFamily: "Roboto",
-                        fontSize: 18,
-                        color: Color(0xff000000),
+        child: WillPopScope(
+      onWillPop: () {
+        return Navigator.pushReplacement(
+            context,
+            PageTransition(
+                duration: Duration(milliseconds: 600),
+                type: PageTransitionType.fade,
+                child: HomeScreen()));
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: true,
+          backgroundColor: Color(0xFF707070),
+          title: Text(applicationProvider
+              .posts[applicationProvider.posts
+                  .indexWhere((element) => element.sId == widget.post.sId)]
+              .authorId
+              .name
+              .toString()),
+        ),
+        body: ListView(
+          children: [
+            Post(
+              insidePost: true,
+              post: applicationProvider.posts[applicationProvider.posts
+                  .indexWhere((element) => element.sId == widget.post.sId)],
+            ),
+            applicationProvider
+                    .posts[applicationProvider.posts.indexWhere(
+                        (element) => element.sId == widget.post.sId)]
+                    .comments
+                    .isEmpty
+                ? Padding(
+                    padding: const EdgeInsets.all(21),
+                    child: Center(
+                      child: Text(
+                        "No Comments Yet",
+                        style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontSize: 18,
+                          color: Color(0xff000000),
+                        ),
                       ),
                     ),
-                  ),
-                )
-              : Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Color(0x5D707070),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Color(0x5D707070),
+                        ),
+                        borderRadius: BorderRadius.circular(18),
                       ),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "Other Comments",
-                              style: TextStyle(
-                                fontFamily: "Roboto",
-                                fontSize: 18,
-                                color: Color(0xff000000),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "Other Comments",
+                                style: TextStyle(
+                                  fontFamily: "Roboto",
+                                  fontSize: 18,
+                                  color: Color(0xff000000),
+                                ),
                               ),
                             ),
-                          ),
-                          ...applicationProvider
-                              .posts[applicationProvider.posts.indexWhere(
-                                  (element) => element.sId == widget.post.sId)]
-                              .comments
-                              .reversed
-                              .map((e) => Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            flex: 6,
-                                            child: CommentWidget(
-                                              post: applicationProvider.posts[
-                                                  applicationProvider.posts
-                                                      .indexWhere((element) =>
-                                                          element.sId ==
-                                                          widget.post.sId)],
-                                              comment: e,
+                            ...applicationProvider
+                                .posts[applicationProvider.posts.indexWhere(
+                                    (element) =>
+                                        element.sId == widget.post.sId)]
+                                .comments
+                                .reversed
+                                .map((e) => Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 6,
+                                              child: CommentWidget(
+                                                post: applicationProvider.posts[
+                                                    applicationProvider.posts
+                                                        .indexWhere((element) =>
+                                                            element.sId ==
+                                                            widget.post.sId)],
+                                                comment: e,
+                                              ),
                                             ),
-                                          ),
-                                          e.commenterId.sId == user.id
-                                              ? Expanded(
-                                                  flex: 2,
-                                                  child: Row(
-                                                    children: [
-                                                      Expanded(
-                                                        flex: 1,
-                                                        child: IconButton(
-                                                          onPressed: () {
-                                                            _showDialog(
-                                                                commentId:
-                                                                    e.sId);
-                                                          },
-                                                          icon: Icon(
-                                                            Icons.edit,
-                                                            color: Colors.grey,
+                                            e.commenterId.sId == user.id
+                                                ? Expanded(
+                                                    flex: 2,
+                                                    child: Row(
+                                                      children: [
+                                                        Expanded(
+                                                          flex: 1,
+                                                          child: IconButton(
+                                                            onPressed: () {
+                                                              _showDialog(
+                                                                  commentId:
+                                                                      e.sId);
+                                                            },
+                                                            icon: Icon(
+                                                              Icons.edit,
+                                                              color:
+                                                                  Colors.grey,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      Expanded(
-                                                        flex: 1,
-                                                        child: IconButton(
-                                                          onPressed: () {
-                                                            socket.emit(
-                                                                'deleteComment',
-                                                                {
-                                                                  "commenterId":
-                                                                      user.id,
-                                                                  "postOwner":
-                                                                      widget
-                                                                          .post
-                                                                          .authorId
-                                                                          .sId,
-                                                                  "commentId":
-                                                                      e.sId,
-                                                                  "postId": applicationProvider
-                                                                      .posts[applicationProvider.posts.indexWhere((element) =>
-                                                                          element
-                                                                              .sId ==
-                                                                          widget
-                                                                              .post
-                                                                              .sId)]
-                                                                      .sId,
-                                                                });
-                                                          },
-                                                          icon: Icon(
-                                                            FontAwesomeIcons
-                                                                .trash,
-                                                            color: Colors.red,
+                                                        Expanded(
+                                                          flex: 1,
+                                                          child: IconButton(
+                                                            onPressed: () {
+                                                              socket.emit(
+                                                                  'deleteComment',
+                                                                  {
+                                                                    "commenterId":
+                                                                        user.id,
+                                                                    "postOwner":
+                                                                        widget
+                                                                            .post
+                                                                            .authorId
+                                                                            .sId,
+                                                                    "commentId":
+                                                                        e.sId,
+                                                                    "postId": applicationProvider
+                                                                        .posts[applicationProvider.posts.indexWhere((element) =>
+                                                                            element.sId ==
+                                                                            widget.post.sId)]
+                                                                        .sId,
+                                                                  });
+                                                            },
+                                                            icon: Icon(
+                                                              FontAwesomeIcons
+                                                                  .trash,
+                                                              color: Colors.red,
+                                                            ),
                                                           ),
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ))
-                                              : Container()
-                                        ],
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
+                                                        )
+                                                      ],
+                                                    ))
+                                                : Container()
+                                          ],
                                         ),
-                                        child: Divider(),
-                                      ),
-                                    ],
-                                  ))
-                              .toList()
-                        ],
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                          ),
+                                          child: Divider(),
+                                        ),
+                                      ],
+                                    ))
+                                .toList()
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                )
-        ],
+                  )
+          ],
+        ),
       ),
     ));
   }
