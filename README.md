@@ -34,7 +34,7 @@
     - [x] Login
     - [x] Sign Up
     - [x] Reset Password
-  - [ ] Main Screens:
+  - [x] Main Screens:
     - [x] Home
     - [x] Inside Post
     - [x] Notifications
