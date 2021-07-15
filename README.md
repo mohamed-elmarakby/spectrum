@@ -34,7 +34,7 @@ Connecting APIs Progress
     - [x] Authentication Pages:
       - [x] Login
       - [x] Sign Up
-      - [ ] Reset Password
+      - [x] Reset Password
     - [ ] Main Screens:
       - [x] Home
       - [x] Inside Post
