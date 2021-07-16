@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "698210144885",
+    "project_id": "spectrum-88078",
+    "storage_bucket": "spectrum-88078.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:698210144885:android:04b7f64caa653df84d5e3c",
+        "android_client_info": {
+          "package_name": "com.spectrum"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "698210144885-0q7q1dirvb0rtdjnn6chvnm2o1isdum3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaEZbtzjzHDO7kxpPIGGpQSYqAWBtSDhY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "698210144885-0q7q1dirvb0rtdjnn6chvnm2o1isdum3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,4 @@
-package com.example.graduation_project
+package com.spectrum
 
 import io.flutter.embedding.android.FlutterActivity
 

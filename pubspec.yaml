@@ -46,6 +46,9 @@ dependencies:
   pull_to_refresh:
   provider: ^5.0.0
   auto_size_text:
+  firebase_messaging:
+  flutter_local_notifications: ^4.0.1
+  firebase_core:
 
 dev_dependencies:
   flutter_test:

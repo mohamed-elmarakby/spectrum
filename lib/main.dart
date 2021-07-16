@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:graduation_project/constant/constant.dart';
@@ -10,14 +11,16 @@ import 'package:graduation_project/models/token_decryption_model.dart';
 import 'package:graduation_project/pages/main_screens/home_screen.dart';
 import 'package:graduation_project/pages/walkthrough/firstPage.dart';
 import 'package:graduation_project/provider/application_provider.dart';
+import 'package:graduation_project/services/push_notifications.dart';
 import 'package:graduation_project/sharedPreference.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 IO.Socket socket;
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
     runApp(
@@ -89,6 +92,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    PushNotificationService()
+      ..initialise()
+      ..getToken().then((value) => print("Mobile Token: $value"));
     getUserInfo();
   }
 

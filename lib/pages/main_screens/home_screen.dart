@@ -3,7 +3,9 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:graduation_project/constant/constant.dart';
 import 'package:graduation_project/main.dart';
@@ -19,6 +21,7 @@ import 'package:graduation_project/pages/authentication/signin.dart';
 import 'package:graduation_project/pages/main_screens/post_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/services/home_services.dart';
+import 'package:graduation_project/services/push_notifications.dart';
 import 'package:graduation_project/sharedPreference.dart';
 import 'package:graduation_project/widgets/bottom_bar.dart';
 import 'package:graduation_project/widgets/friend.dart';
@@ -29,6 +32,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:vibration/vibration.dart';
 import '../../pages/profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -41,6 +45,35 @@ class _HomeScreenState extends State<HomeScreen> {
   String searchFor = '';
   int chosenPage = 0;
   bool loading = false;
+
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      new FlutterLocalNotificationsPlugin();
+  void showNotification(String title, String body) async {
+    await _demoNotification(title, body);
+  }
+
+  Future<void> _demoNotification(String title, String body) async {
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'channel_ID', 'channel name', 'channel description',
+        importance: Importance.max,
+        playSound: true,
+        showProgress: true,
+        priority: Priority.high,
+        ticker: 'test ticker');
+    //check here notification sound of ios should be here
+    var iOSChannelSpecifics = IOSNotificationDetails(
+        // sound: 'notification.aiff',
+        // presentSound: true,
+        );
+    var platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics, iOS: iOSChannelSpecifics);
+    print('body: $body');
+    print('title: $title');
+    await flutterLocalNotificationsPlugin
+        .show(0, title, body, platformChannelSpecifics, payload: '');
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -48,6 +81,54 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       loading = true;
     });
+    var initializationSettingsAndroid =
+        new AndroidInitializationSettings('mipmap/ic_notification');
+    var initializationSettingsIOS = new IOSInitializationSettings(
+      requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
+    );
+    var initializationSettings = new InitializationSettings(
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      // onSelectNotification: onSelectNotification,
+    );
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        // print('https://humhumapp.com/client_notification.wav');
+        // AudioPlayer audioPlayer = AudioPlayer();
+        // await audioPlayer.play(
+        //   'https://humhumapp.com/client_notification.wav',
+        //   isLocal: false,
+        //   respectSilence: true,
+        // );
+        // print(message);
+        // if (await Vibration.hasVibrator()) {
+        //   Vibration.vibrate();
+        // }
+
+        showNotification(
+            message['notification']['title'], message['notification']['body']);
+        print("onMessage: $message");
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print(message);
+        if (await Vibration.hasVibrator()) {
+          Vibration.vibrate();
+        }
+        print("onLaunch: $message");
+        // Navigator.pushNamed(context, '/notify');
+      },
+      onBackgroundMessage: backgroundMessageHandler,
+      onResume: (Map<String, dynamic> message) async {
+        print(message);
+        if (await Vibration.hasVibrator()) {
+          Vibration.vibrate();
+        }
+        print("onResume: $message");
+      },
+    );
     connect();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ApplicationProvider applicationProvider =
@@ -317,6 +398,16 @@ class _HomeScreenState extends State<HomeScreen> {
           return;
         },
         child: Scaffold(
+          // floatingActionButton: FloatingActionButton(
+          //   onPressed: () async {
+          //     await PushNotificationService().callOnFcmApiSendPushNotifications(
+          //         userToken: [
+          //           'dzf-Xi3ZS5imk7BmBGYw77:APA91bGIkBPDMVTRFC_uD5ffECWtiOXbaALsb4Hre3gW6mcnCamGizpS3y4BEUfQBt82AdYJeGY4XDvNxL5n1cvmYyy0iKaRFKJAi-Jvm2k-M7reQHR8qJJg4JFighd9T5RG11LiarTT'
+          //         ],
+          //         body: 'sending from mobile to tablet emulators',
+          //         title: 'test sending without backend');
+          //   },
+          // ),
           body: Stack(
             children: [
               Padding(
