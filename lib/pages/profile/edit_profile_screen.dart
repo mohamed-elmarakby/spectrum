@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -11,6 +12,7 @@ import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/services/freinds_services.dart';
 import 'package:graduation_project/services/home_services.dart';
 import 'package:graduation_project/sharedPreference.dart';
+import 'package:graduation_project/widgets/alrert_manger.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -94,6 +96,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           print('Encoded Image here $base64ImageProfile');
         });
       }
+    }).catchError((onError) {
+      log(onError.toString());
+      AlertsManager().showError(
+          context: context,
+          title: 'Ops..',
+          body: 'Something Went Wrong',
+          description: 'Something Went Wrong');
     });
   }
 
@@ -161,6 +170,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           print('Encoded Image here $base64ImageCover');
         });
       }
+    }).catchError((onError) {
+      log(onError.toString());
+      AlertsManager().showError(
+          context: context,
+          title: 'Ops..',
+          body: 'Something Went Wrong',
+          description: 'Something Went Wrong');
     });
   }
 
@@ -535,7 +551,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   userId: user.id,
                                   isMine: true,
                                 )));
+                      }).catchError((onError) {
+                        log(onError.toString());
+                        setState(() {
+                          loading = false;
+                        });
+                        AlertsManager().showError(
+                            context: context,
+                            title: 'Ops..',
+                            body: 'Something Went Wrong',
+                            description: 'Something Went Wrong');
                       });
+                    }).catchError((onError) {
+                      log(onError.toString());
+                      setState(() {
+                        loading = false;
+                      });
+                      AlertsManager().showError(
+                          context: context,
+                          title: 'Ops..',
+                          body: 'Something Went Wrong',
+                          description: 'Something Went Wrong');
                     });
                   },
                   child: Padding(

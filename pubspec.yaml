@@ -49,6 +49,7 @@ dependencies:
   firebase_messaging:
   flutter_local_notifications: ^4.0.1
   firebase_core:
+  awesome_dialog: ^2.1.0
 
 dev_dependencies:
   flutter_test:

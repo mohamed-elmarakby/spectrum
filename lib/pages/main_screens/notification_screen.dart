@@ -10,6 +10,7 @@ import 'package:graduation_project/pages/main_screens/my_post_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/services/home_services.dart';
 import 'package:graduation_project/sharedPreference.dart';
+import 'package:graduation_project/widgets/alrert_manger.dart';
 import 'package:graduation_project/widgets/comment.dart';
 import 'package:graduation_project/widgets/loading_shimmer.dart';
 import 'package:graduation_project/widgets/notification.dart';
@@ -46,6 +47,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
           Provider.of<ApplicationProvider>(context, listen: false);
       getNotifications().then((value) {
         loading = false;
+      }).catchError((onError) {
+        log(onError.toString());
+        setState(() {
+          loading = false;
+        });
+        AlertsManager().showError(
+            context: context,
+            title: 'Ops..',
+            body: 'Something Went Wrong',
+            description: 'Something Went Wrong');
       });
     });
   }
@@ -110,7 +121,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                             child: MyPostScreen(
                                               post: value,
                                             )));
-                                  }).onError((error, stackTrace) {
+                                  }).catchError((onError) async {
+                                    log(onError.toString());
                                     Navigator.push(
                                         context,
                                         PageTransition(

@@ -10,6 +10,7 @@ import 'package:graduation_project/pages/main_screens/insideChat_screen.dart';
 import 'package:graduation_project/pages/profile/profile_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/services/home_services.dart';
+import 'package:graduation_project/widgets/alrert_manger.dart';
 import 'package:graduation_project/widgets/friend.dart';
 import 'package:graduation_project/widgets/loading_shimmer.dart';
 import 'package:page_transition/page_transition.dart';
@@ -51,6 +52,16 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
         setState(() {
           loading = false;
         });
+      }).catchError((onError) {
+        log(onError.toString());
+        setState(() {
+          loading = false;
+        });
+        AlertsManager().showError(
+            context: context,
+            title: 'Ops..',
+            body: 'Something Went Wrong',
+            description: 'Something Went Wrong');
       });
     });
   }
@@ -110,13 +121,23 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                                             insideChatResponseModel: value,
                                             isGroup: false,
                                           )));
+                                }).catchError((onError) {
+                                  log(onError.toString());
+                                  AlertsManager().showError(
+                                      context: context,
+                                      title: 'Ops..',
+                                      body: 'Something Went Wrong',
+                                      description: 'Something Went Wrong');
                                 });
                               },
                               child: ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor: Colors.transparent,
-                                  backgroundImage: CachedNetworkImageProvider(
-                                      e.senderId.image),
+                                  backgroundImage: CachedNetworkImageProvider(e
+                                      .chat.users
+                                      .firstWhere(
+                                          (element) => element.sId != user.id)
+                                      .image),
                                   minRadius: 16,
                                   maxRadius: 24,
                                   // child: e.senderId.image == null

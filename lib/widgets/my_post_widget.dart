@@ -55,17 +55,23 @@ class _MyPostWidgetState extends State<MyPostWidget> {
               GestureDetector(
                 onTap: () {
                   if (!widget.insidePost) {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                            duration: Duration(milliseconds: 600),
-                            type: PageTransitionType.fade,
-                            child: MyPostScreen(
-                              post: applicationProvider.myPosts[
-                                  applicationProvider.myPosts.indexWhere(
-                                      (element) =>
-                                          element.sId == widget.post.sId)],
-                            )));
+                    if (applicationProvider.myPosts.any((element) =>
+                        element ==
+                        applicationProvider.myPosts[applicationProvider.myPosts
+                            .indexWhere((element) =>
+                                element.sId == widget.post.sId)])) {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              duration: Duration(milliseconds: 600),
+                              type: PageTransitionType.fade,
+                              child: MyPostScreen(
+                                post: applicationProvider.myPosts[
+                                    applicationProvider.myPosts.indexWhere(
+                                        (element) =>
+                                            element.sId == widget.post.sId)],
+                              )));
+                    }
                   }
                 },
                 child: ListTile(

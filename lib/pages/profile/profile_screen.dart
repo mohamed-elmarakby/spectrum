@@ -19,6 +19,7 @@ import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/services/freinds_services.dart';
 import 'package:graduation_project/services/home_services.dart';
 import 'package:graduation_project/sharedPreference.dart';
+import 'package:graduation_project/widgets/alrert_manger.dart';
 import 'package:graduation_project/widgets/full_photo.dart';
 import 'package:graduation_project/widgets/my_post_widget.dart';
 import 'package:graduation_project/widgets/post_widget.dart';
@@ -123,19 +124,56 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
           print('Encoded Image here $base64Image');
         });
       }
+    }).catchError((onError) {
+      log(onError.toString());
+      AlertsManager().showError(
+          context: context,
+          title: 'Ops..',
+          body: 'Something Went Wrong',
+          description: 'Something Went Wrong');
     });
   }
 
+  bool addingPost = false;
   Future post() async {
     ApplicationProvider applicationProvider =
         Provider.of<ApplicationProvider>(context, listen: false);
     if (_postTextController.text.isNotEmpty) {
+      setState(() {
+        addingPost = true;
+      });
       await HomeServices()
           .addPostApi(text: _postTextController.text, file: imageFile)
           .then((value) async {
         await applicationProvider.getMyPosts().then((value) {
+          setState(() {
+            addingPost = false;
+            imageFile = null;
+          });
           _postTextController.clear();
+        }).catchError((onError) {
+          log(onError.toString());
+          setState(() {
+            addingPost = false;
+            imageFile = null;
+          });
+          AlertsManager().showError(
+              context: context,
+              title: 'Ops..',
+              body: 'Something Went Wrong',
+              description: 'Something Went Wrong');
         });
+      }).catchError((onError) {
+        log(onError.toString());
+        setState(() {
+          addingPost = false;
+          imageFile = null;
+        });
+        AlertsManager().showError(
+            context: context,
+            title: 'Ops..',
+            body: 'Something Went Wrong',
+            description: 'Something Went Wrong');
       });
     }
   }
@@ -166,8 +204,38 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
               setState(() {
                 load = false;
               });
+            }).catchError((onError) {
+              log(onError.toString());
+              setState(() {
+                load = false;
+              });
+              AlertsManager().showError(
+                  context: context,
+                  title: 'Ops..',
+                  body: 'Something Went Wrong',
+                  description: 'Something Went Wrong');
             });
+          }).catchError((onError) {
+            log(onError.toString());
+            setState(() {
+              load = false;
+            });
+            AlertsManager().showError(
+                context: context,
+                title: 'Ops..',
+                body: 'Something Went Wrong',
+                description: 'Something Went Wrong');
           });
+        }).catchError((onError) {
+          log(onError.toString());
+          setState(() {
+            load = false;
+          });
+          AlertsManager().showError(
+              context: context,
+              title: 'Ops..',
+              body: 'Something Went Wrong',
+              description: 'Something Went Wrong');
         });
       });
     }
@@ -714,6 +782,15 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                                 userId: widget
                                                                     .userId,
                                                               )));
+                                                    }).catchError((onError) {
+                                                      log(onError.toString());
+                                                      AlertsManager().showError(
+                                                          context: context,
+                                                          title: 'Ops..',
+                                                          body:
+                                                              'Something Went Wrong',
+                                                          description:
+                                                              'Something Went Wrong');
                                                     });
                                                   });
                                                 },
@@ -811,6 +888,15 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                                 userId: widget
                                                                     .userId,
                                                               )));
+                                                    }).catchError((onError) {
+                                                      log(onError.toString());
+                                                      AlertsManager().showError(
+                                                          context: context,
+                                                          title: 'Ops..',
+                                                          body:
+                                                              'Something Went Wrong',
+                                                          description:
+                                                              'Something Went Wrong');
                                                     });
                                                   });
                                                 },
@@ -908,6 +994,15 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                                     value,
                                                                 isGroup: false,
                                                               )));
+                                                    }).catchError((onError) {
+                                                      log(onError.toString());
+                                                      AlertsManager().showError(
+                                                          context: context,
+                                                          title: 'Ops..',
+                                                          body:
+                                                              'Something Went Wrong',
+                                                          description:
+                                                              'Something Went Wrong');
                                                     });
                                                   },
                                                   child: Container(
@@ -983,7 +1078,18 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                             milliseconds: 500),
                                                         () async {
                                                       await applicationProvider
-                                                          .getAllPosts();
+                                                          .getAllPosts()
+                                                          .catchError(
+                                                              (onError) {
+                                                        log(onError.toString());
+                                                        AlertsManager().showError(
+                                                            context: context,
+                                                            title: 'Ops..',
+                                                            body:
+                                                                'Something Went Wrong',
+                                                            description:
+                                                                'Something Went Wrong');
+                                                      });
                                                       await applicationProvider
                                                           .getAllMyFriends()
                                                           .then((value) {
@@ -1005,6 +1111,15 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                                       userId: widget
                                                                           .userId,
                                                                     )));
+                                                      }).catchError((onError) {
+                                                        log(onError.toString());
+                                                        AlertsManager().showError(
+                                                            context: context,
+                                                            title: 'Ops..',
+                                                            body:
+                                                                'Something Went Wrong',
+                                                            description:
+                                                                'Something Went Wrong');
                                                       });
                                                     });
                                                   },
@@ -1209,7 +1324,12 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                       const EdgeInsets.all(8.0),
                                                   child: GestureDetector(
                                                     onTap: () {
-                                                      post();
+                                                      if (addingPost) {
+                                                        return;
+                                                      } else {
+                                                        log('posting');
+                                                        post();
+                                                      }
                                                     },
                                                     child: Container(
                                                       height:
@@ -1228,13 +1348,20 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                         padding:
                                                             EdgeInsets.all(4),
                                                         child: Center(
-                                                          child: Text(
-                                                            'Post',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 14),
-                                                          ),
+                                                          child: addingPost
+                                                              ? SpinKitWave(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  size: 14,
+                                                                )
+                                                              : Text(
+                                                                  'Post',
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      fontSize:
+                                                                          14),
+                                                                ),
                                                         ),
                                                       ),
                                                     ),

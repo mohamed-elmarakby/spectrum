@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:graduation_project/main.dart';
 import 'package:graduation_project/models/allGroups_model.dart';
 import 'package:graduation_project/pages/main_screens/insideChat_screen.dart';
 import 'package:graduation_project/services/home_services.dart';
+import 'package:graduation_project/widgets/alrert_manger.dart';
 import 'package:graduation_project/widgets/friend.dart';
 import 'package:graduation_project/widgets/group_widget.dart';
 import 'package:page_transition/page_transition.dart';
@@ -35,6 +38,16 @@ class _GroupsListScreenState extends State<GroupsListScreen> {
       setState(() {
         loading = false;
       });
+    }).catchError((onError) {
+      log(onError.toString());
+      setState(() {
+        loading = false;
+      });
+      AlertsManager().showError(
+          context: context,
+          title: 'Ops..',
+          body: 'Something Went Wrong',
+          description: 'Something Went Wrong');
     });
   }
 

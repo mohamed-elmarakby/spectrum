@@ -12,6 +12,7 @@ import 'package:graduation_project/models/socket_models.dart/user_info_socket_mo
 import 'package:graduation_project/pages/main_screens/home_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/services/home_services.dart';
+import 'package:graduation_project/widgets/alrert_manger.dart';
 import 'package:graduation_project/widgets/comment.dart';
 import 'package:graduation_project/widgets/post_widget.dart';
 import 'package:page_transition/page_transition.dart';
@@ -97,6 +98,14 @@ class _PostScreenState extends State<PostScreen> {
                                         _editCommentController.clear();
                                       });
                                       Navigator.pop(context);
+                                    }).catchError((onError) {
+                                      log(onError.toString());
+                                      Navigator.pop(context);
+                                      AlertsManager().showError(
+                                          context: context,
+                                          title: 'Ops..',
+                                          body: 'Something Went Wrong',
+                                          description: 'Something Went Wrong');
                                     });
                                   }
                                 }),

@@ -23,6 +23,7 @@ import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/services/home_services.dart';
 import 'package:graduation_project/services/push_notifications.dart';
 import 'package:graduation_project/sharedPreference.dart';
+import 'package:graduation_project/widgets/alrert_manger.dart';
 import 'package:graduation_project/widgets/bottom_bar.dart';
 import 'package:graduation_project/widgets/friend.dart';
 import 'package:graduation_project/widgets/loading_shimmer.dart';
@@ -133,18 +134,36 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ApplicationProvider applicationProvider =
           Provider.of<ApplicationProvider>(context, listen: false);
-      applicationProvider.getMyPosts();
-      applicationProvider.getAllPosts();
-      applicationProvider.getNotification();
-      applicationProvider.getRequest();
-      applicationProvider.getChatMsg();
-      applicationProvider.getGroupMsg();
-      applicationProvider.getAllUsers();
-      applicationProvider.getAllMyFriends().then((value) {
+      try {
+        applicationProvider.getMyPosts();
+        applicationProvider.getAllPosts();
+        applicationProvider.getNotification();
+        applicationProvider.getRequest();
+        applicationProvider.getChatMsg();
+        applicationProvider.getGroupMsg();
+        applicationProvider.getAllUsers();
+        applicationProvider.getAllMyFriends().then((value) {
+          setState(() {
+            loading = false;
+          });
+        });
+      } catch (e) {
+        log(e);
         setState(() {
           loading = false;
         });
-      });
+        AlertsManager().showError(
+            context: context,
+            title: 'Ops..',
+            body: 'Something Went Wrong',
+            description: 'Something Went Wrong');
+        Navigator.pushReplacement(
+            context,
+            PageTransition(
+                duration: Duration(milliseconds: 600),
+                type: PageTransitionType.fade,
+                child: HomeScreen()));
+      }
     });
   }
 
@@ -645,21 +664,33 @@ class _HomeScreenState extends State<HomeScreen> {
                               hoverColor: Colors.transparent,
                               focusColor: Colors.transparent,
                               onTap: () {
-                                setState(() {
-                                  loading = true;
-                                });
-                                applicationProvider.getMyPosts();
-                                applicationProvider.getAllPosts();
-                                applicationProvider.getRequest();
-                                applicationProvider.getNotification();
-                                applicationProvider.getAllUsers();
-                                applicationProvider
-                                    .getAllMyFriends()
-                                    .then((value) {
+                                try {
+                                  setState(() {
+                                    loading = true;
+                                  });
+                                  applicationProvider.getMyPosts();
+                                  applicationProvider.getAllPosts();
+                                  applicationProvider.getRequest();
+                                  applicationProvider.getNotification();
+                                  applicationProvider.getAllUsers();
+                                  applicationProvider
+                                      .getAllMyFriends()
+                                      .then((value) {
+                                    setState(() {
+                                      loading = false;
+                                    });
+                                  });
+                                } catch (e) {
+                                  log(e);
                                   setState(() {
                                     loading = false;
                                   });
-                                });
+                                  AlertsManager().showError(
+                                      context: context,
+                                      title: 'Ops..',
+                                      body: 'Something Went Wrong',
+                                      description: 'Something Went Wrong');
+                                }
                               },
                               child: Container(
                                 width: width / 2,

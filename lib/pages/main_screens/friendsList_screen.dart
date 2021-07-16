@@ -6,6 +6,7 @@ import 'package:graduation_project/models/socket_models.dart/user_info_socket_mo
 import 'package:graduation_project/pages/profile/profile_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/services/home_services.dart';
+import 'package:graduation_project/widgets/alrert_manger.dart';
 import 'package:graduation_project/widgets/friend.dart';
 import 'package:graduation_project/widgets/loading_shimmer.dart';
 import 'package:page_transition/page_transition.dart';
@@ -75,7 +76,27 @@ class _FriendsListScreenState extends State<FriendsListScreen> {
               .retainWhere((x) => ids.remove(x.sId));
           loading = false;
         });
+      }).catchError((onError) {
+        log(onError.toString());
+        setState(() {
+          loading = false;
+        });
+        AlertsManager().showError(
+            context: context,
+            title: 'Ops..',
+            body: 'Something Went Wrong',
+            description: 'Something Went Wrong');
       });
+    }).catchError((onError) {
+      log(onError.toString());
+      setState(() {
+        loading = false;
+      });
+      AlertsManager().showError(
+          context: context,
+          title: 'Ops..',
+          body: 'Something Went Wrong',
+          description: 'Something Went Wrong');
     });
   }
 

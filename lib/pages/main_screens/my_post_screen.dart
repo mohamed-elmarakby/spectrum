@@ -12,6 +12,7 @@ import 'package:graduation_project/models/socket_models.dart/user_info_socket_mo
 import 'package:graduation_project/pages/main_screens/home_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/services/home_services.dart';
+import 'package:graduation_project/widgets/alrert_manger.dart';
 import 'package:graduation_project/widgets/comment.dart';
 import 'package:graduation_project/widgets/my_post_widget.dart';
 import 'package:graduation_project/widgets/post_widget.dart';
@@ -102,6 +103,15 @@ class _MyPostScreenState extends State<MyPostScreen> {
                                           _editCommentController.clear();
                                         });
                                         Navigator.pop(context);
+                                      }).catchError((onError) {
+                                        log(onError.toString());
+                                        Navigator.pop(context);
+                                        AlertsManager().showError(
+                                            context: context,
+                                            title: 'Ops..',
+                                            body: 'Something Went Wrong',
+                                            description:
+                                                'Something Went Wrong');
                                       });
                                     }
                                   } else {
@@ -127,6 +137,15 @@ class _MyPostScreenState extends State<MyPostScreen> {
                                           _editPostController.clear();
                                         });
                                         Navigator.pop(context);
+                                      }).catchError((onError) {
+                                        log(onError.toString());
+                                        Navigator.pop(context);
+                                        AlertsManager().showError(
+                                            context: context,
+                                            title: 'Ops..',
+                                            body: 'Something Went Wrong',
+                                            description:
+                                                'Something Went Wrong');
                                       });
                                     }
                                   }
@@ -217,13 +236,29 @@ class _MyPostScreenState extends State<MyPostScreen> {
                           onTap: () async {
                             await HomeServices()
                                 .deletePost(postId: widget.post.sId)
-                                .then((value) {
-                              Navigator.pushReplacement(
-                                  context,
-                                  PageTransition(
-                                      duration: Duration(milliseconds: 600),
-                                      type: PageTransitionType.fade,
-                                      child: HomeScreen()));
+                                .then((value) async {
+                              await HomeServices().getMyPost().then((value) {
+                                Navigator.pushReplacement(
+                                    context,
+                                    PageTransition(
+                                        duration: Duration(milliseconds: 600),
+                                        type: PageTransitionType.fade,
+                                        child: HomeScreen()));
+                              }).catchError((onError) {
+                                Navigator.pushReplacement(
+                                    context,
+                                    PageTransition(
+                                        duration: Duration(milliseconds: 600),
+                                        type: PageTransitionType.fade,
+                                        child: HomeScreen()));
+                              });
+                            }).catchError((onError) {
+                              log(onError.toString());
+                              AlertsManager().showError(
+                                  context: context,
+                                  title: 'Ops..',
+                                  body: 'Something Went Wrong',
+                                  description: 'Something Went Wrong');
                             });
                           },
                           child: Container(
