@@ -87,6 +87,9 @@ class _SignInState extends State<SignIn> {
                           type: PageTransitionType.fade,
                           child: HomeScreen()));
                 } else {
+                  setState(() {
+                    loginLoading = false;
+                  });
                   AlertsManager().showError(
                       context: context,
                       title: 'Ops..',
