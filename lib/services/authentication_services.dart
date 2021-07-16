@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:graduation_project/constant/constant.dart';
+import 'package:graduation_project/main.dart';
 import 'package:graduation_project/models/login_model.dart';
 import 'package:graduation_project/models/register_model.dart';
 
@@ -66,6 +67,33 @@ class AuthenticationServices {
       },
     );
     return tempLoginResponse;
+  }
+
+  Future<bool> sendToken({
+    String userId,
+  }) async {
+    Dio dio = Dio();
+    String url = Constants().apiUrl + 'mobileToken';
+    log(url);
+    bool success = false;
+    Map tokenData = {
+      "userId": userId,
+      "mobile_token": mobileToken,
+    };
+    log(tokenData.toString());
+    await dio
+        .post(
+      url,
+      data: tokenData,
+    )
+        .then(
+      (value) {
+        print(value.statusCode);
+        print(value.data);
+        success = value.data['success'];
+      },
+    );
+    return success;
   }
 
   Future<bool> checkEmail({

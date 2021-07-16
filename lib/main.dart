@@ -18,6 +18,7 @@ import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 IO.Socket socket;
+String mobileToken = '';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -94,7 +95,12 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     PushNotificationService()
       ..initialise()
-      ..getToken().then((value) => print("Mobile Token: $value"));
+      ..getToken().then((value) {
+        print("Mobile Token: $value");
+        setState(() {
+          mobileToken = value;
+        });
+      });
     getUserInfo();
   }
 

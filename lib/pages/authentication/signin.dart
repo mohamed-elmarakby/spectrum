@@ -12,6 +12,7 @@ import 'package:graduation_project/pages/authentication/signup.dart';
 import 'package:graduation_project/pages/main_screens/home_screen.dart';
 import 'package:graduation_project/services/authentication_services.dart';
 import 'package:graduation_project/services/freinds_services.dart';
+import 'package:graduation_project/services/home_services.dart';
 import 'package:graduation_project/sharedPreference.dart';
 import 'package:graduation_project/widgets/alrert_manger.dart';
 import 'package:graduation_project/widgets/error_text.dart';
@@ -72,15 +73,37 @@ class _SignInState extends State<SignIn> {
             await SharedPref().save('user', info);
             log(user.toString() + user.runtimeType.toString() + user.address);
             Future.delayed(Duration(milliseconds: 500), () async {
+              await AuthenticationServices()
+                  .sendToken(userId: value1.id)
+                  .then((value) {
+                if (value) {
+                  setState(() {
+                    loginLoading = false;
+                  });
+                  Navigator.push(
+                      context,
+                      PageTransition(
+                          duration: Duration(milliseconds: 600),
+                          type: PageTransitionType.fade,
+                          child: HomeScreen()));
+                } else {
+                  AlertsManager().showError(
+                      context: context,
+                      title: 'Ops..',
+                      body: 'Something Went Wrong',
+                      description: 'Something Went Wrong');
+                }
+              });
+            }).catchError((onError) {
+              log(onError.toString());
               setState(() {
                 loginLoading = false;
               });
-              Navigator.push(
-                  context,
-                  PageTransition(
-                      duration: Duration(milliseconds: 600),
-                      type: PageTransitionType.fade,
-                      child: HomeScreen()));
+              AlertsManager().showError(
+                  context: context,
+                  title: 'Ops..',
+                  body: 'Something Went Wrong',
+                  description: 'Something Went Wrong');
             });
           }).catchError((onError) {
             log(onError.toString());
