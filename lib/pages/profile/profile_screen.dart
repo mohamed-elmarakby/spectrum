@@ -365,20 +365,44 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                                               : userInfoResponse
                                                                   .cover)));
                                         },
-                                        child: CachedNetworkImage(
-                                          imageUrl: widget.isMine
-                                              ? user.cover
-                                              : userInfoResponse.cover
-                                                  .toString(),
-                                          useOldImageOnUrlChange: true,
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.25,
-                                          fit: BoxFit.cover,
-                                        ),
+                                        child: widget.isMine
+                                            ? user.cover != null
+                                                ? CachedNetworkImage(
+                                                    imageUrl:
+                                                        user.cover.toString(),
+                                                    useOldImageOnUrlChange:
+                                                        true,
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                            .size
+                                                            .width,
+                                                    height:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.25,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : Container()
+                                            : userInfoResponse.cover != null
+                                                ? CachedNetworkImage(
+                                                    imageUrl: userInfoResponse
+                                                        .cover
+                                                        .toString(),
+                                                    useOldImageOnUrlChange:
+                                                        true,
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                            .size
+                                                            .width,
+                                                    height:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.25,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : Container(),
                                       ),
                                 Align(
                                   alignment: Alignment(0, 0.45),
