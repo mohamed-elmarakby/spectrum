@@ -206,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void connect() {
     ApplicationProvider applicationProvider =
         Provider.of<ApplicationProvider>(context, listen: false);
-    socket = IO.io("http://192.168.1.7:3000", <String, dynamic>{
+    socket = IO.io("https://social-spectrum.herokuapp.com", <String, dynamic>{
       "transports": ["websocket"],
       "autoConnect": false,
     });

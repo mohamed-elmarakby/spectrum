@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Constants {
-  String apiUrl = 'http://192.168.1.7:3000/api/';
+  String apiUrl = 'https://social-spectrum.herokuapp.com/api/';
 }
 
 class Palette {
