@@ -166,7 +166,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                               size: 14,
                             )
                           : Text(
-                              "Send Code",
+                              "Change Password",
                               style: TextStyle(
                                 fontFamily: "GE_SS_TWO",
                                 fontWeight: FontWeight.w300,
