@@ -100,85 +100,91 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
         ),
         body: loading
             ? LoadingShimmer(width: width)
-            : Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: ListView(
-                    children: allChatsModel
-                        .map((e) => GestureDetector(
-                              onTap: () async {
-                                await HomeServices()
-                                    .getChatMessages(chatId: e.chat.sId)
-                                    .then((value) {
-                                  Navigator.push(
-                                      context,
-                                      PageTransition(
-                                          duration: Duration(milliseconds: 600),
-                                          type: PageTransitionType.fade,
-                                          child: InsideChatScreen(
-                                            insideChatResponseModel: value,
-                                            isGroup: false,
-                                          )));
-                                }).catchError((onError) {
-                                  log(onError.toString());
-                                  AlertsManager().showError(
-                                      context: context,
-                                      title: 'Ops..',
-                                      body: 'Something Went Wrong',
-                                      description: 'Something Went Wrong');
-                                });
-                              },
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: Colors.transparent,
-                                  backgroundImage: CachedNetworkImageProvider(e
-                                      .chat.users
-                                      .firstWhere(
-                                          (element) => element.sId != user.id)
-                                      .image),
-                                  minRadius: 16,
-                                  maxRadius: 24,
-                                  // child: e.senderId.image == null
-                                  //     ? Container()
-                                  //     : Container(
-                                  //         height:
-                                  //             MediaQuery.of(context).size.width /
-                                  //                 2,
-                                  //         width:
-                                  //             MediaQuery.of(context).size.width,
-                                  //         decoration: BoxDecoration(
-                                  //           image: DecorationImage(
-                                  //               fit: BoxFit.cover,
-                                  //               image: CachedNetworkImageProvider(
-                                  //                   e.senderId.image)),
-                                  //         ),
-                                  //       ),
-                                ),
-                                subtitle: Text('${e.content.toString()}'),
-                                trailing: Text(
-                                  dateFormat
-                                      .format(DateTime.parse(e.date))
-                                      .toString(),
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 12),
-                                ),
-                                title: Text(
-                                  e.chat.users
-                                      .firstWhere(
-                                          (element) => element.sId != user.id)
-                                      .name
-                                      .toString(),
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 16),
-                                ),
-                              ),
-                            ))
-                        .toList(),
+            : allChatsModel.isEmpty
+                ? Center(
+                    child: Text('No Chats Yet'),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      child: ListView(
+                        children: allChatsModel
+                            .map((e) => GestureDetector(
+                                  onTap: () async {
+                                    await HomeServices()
+                                        .getChatMessages(chatId: e.chat.sId)
+                                        .then((value) {
+                                      Navigator.push(
+                                          context,
+                                          PageTransition(
+                                              duration:
+                                                  Duration(milliseconds: 600),
+                                              type: PageTransitionType.fade,
+                                              child: InsideChatScreen(
+                                                insideChatResponseModel: value,
+                                                isGroup: false,
+                                              )));
+                                    }).catchError((onError) {
+                                      log(onError.toString());
+                                      AlertsManager().showError(
+                                          context: context,
+                                          title: 'Ops..',
+                                          body: 'Something Went Wrong',
+                                          description: 'Something Went Wrong');
+                                    });
+                                  },
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundColor: Colors.transparent,
+                                      backgroundImage:
+                                          CachedNetworkImageProvider(e
+                                              .chat.users
+                                              .firstWhere((element) =>
+                                                  element.sId != user.id)
+                                              .image),
+                                      minRadius: 16,
+                                      maxRadius: 24,
+                                      // child: e.senderId.image == null
+                                      //     ? Container()
+                                      //     : Container(
+                                      //         height:
+                                      //             MediaQuery.of(context).size.width /
+                                      //                 2,
+                                      //         width:
+                                      //             MediaQuery.of(context).size.width,
+                                      //         decoration: BoxDecoration(
+                                      //           image: DecorationImage(
+                                      //               fit: BoxFit.cover,
+                                      //               image: CachedNetworkImageProvider(
+                                      //                   e.senderId.image)),
+                                      //         ),
+                                      //       ),
+                                    ),
+                                    subtitle: Text('${e.content.toString()}'),
+                                    trailing: Text(
+                                      dateFormat
+                                          .format(DateTime.parse(e.date))
+                                          .toString(),
+                                      style: TextStyle(
+                                          color: Colors.grey, fontSize: 12),
+                                    ),
+                                    title: Text(
+                                      e.chat.users
+                                          .firstWhere((element) =>
+                                              element.sId != user.id)
+                                          .name
+                                          .toString(),
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 16),
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                    ),
                   ),
-                ),
-              ),
       ),
     ));
   }

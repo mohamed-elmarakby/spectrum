@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:graduation_project/models/allGroups_model.dart';
@@ -41,6 +44,7 @@ class _GroupWidgetState extends State<GroupWidget> {
                 await HomeServices()
                     .getChatMessages(chatId: widget.groups.groupId)
                     .then((value) {
+                  log('enter group value: ${json.encode(value)}');
                   Navigator.push(
                       context,
                       PageTransition(

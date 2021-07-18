@@ -29,16 +29,23 @@ class MyFriends {
   Id id;
   bool isRequest;
   String chatId;
+  bool chosen;
   String date;
 
   MyFriends(
-      {this.sId, this.id, this.chatId, this.date, this.isRequest = false});
+      {this.sId,
+      this.chosen = false,
+      this.id,
+      this.chatId,
+      this.date,
+      this.isRequest = false});
 
   MyFriends.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     id = json['id'] != null ? new Id.fromJson(json['id']) : null;
     chatId = json['chatId'];
     date = json['date'];
+    chosen = false;
   }
 
   Map<String, dynamic> toJson() {

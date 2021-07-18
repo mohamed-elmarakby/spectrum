@@ -445,6 +445,34 @@ class HomeServices {
     return insideChatResponseModel;
   }
 
+  Future<String> createGroupApi({
+    List<String> members,
+    String name,
+  }) async {
+    Dio dio = Dio();
+    String url = Constants().apiUrl + 'createGroup';
+    log(url);
+    String created = '';
+    log(json.encode({
+      "data": {"members": members, "name": name}
+    }));
+    await dio.post(
+      url,
+      data: {
+        "data": {"members": members, "name": name}
+      },
+    ).catchError((error, stackTrace) {
+      log(error.toString());
+    }).then(
+      (value) {
+        print(value.statusCode.toString());
+        print(value.data.toString());
+        created = value.data;
+      },
+    );
+    return created;
+  }
+
   Future addPostApi({
     String text,
     String image,

@@ -2,12 +2,19 @@ class UserInfoSocketModel {
   String image;
   String cover;
   String sId;
+  bool chosen;
   String name;
   String email;
   String address;
 
   UserInfoSocketModel(
-      {this.image, this.cover, this.sId, this.name, this.email, this.address});
+      {this.image,
+      this.cover,
+      this.chosen = false,
+      this.sId,
+      this.name,
+      this.email,
+      this.address});
 
   UserInfoSocketModel.fromJson(Map<String, dynamic> json) {
     image = json['image'];

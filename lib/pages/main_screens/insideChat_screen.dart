@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:graduation_project/main.dart';
 import 'package:graduation_project/models/InsideChatResponse_model.dart';
+import 'package:graduation_project/pages/groups/groupsList_screen.dart';
 import 'package:graduation_project/pages/main_screens/chats_screen.dart';
 import 'package:graduation_project/provider/application_provider.dart';
 import 'package:graduation_project/sharedPreference.dart';
@@ -95,12 +96,21 @@ class InsideChatScreenState extends State<InsideChatScreen> {
         automaticallyImplyLeading: false,
         leading: GestureDetector(
             onTap: () {
-              Navigator.push(
-                  context,
-                  PageTransition(
-                      duration: Duration(milliseconds: 600),
-                      type: PageTransitionType.fade,
-                      child: ChatsListScreen()));
+              if (widget.isGroup) {
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        duration: Duration(milliseconds: 600),
+                        type: PageTransitionType.fade,
+                        child: GroupsListScreen()));
+              } else {
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        duration: Duration(milliseconds: 600),
+                        type: PageTransitionType.fade,
+                        child: ChatsListScreen()));
+              }
             },
             child: Icon(Icons.arrow_back)),
         backgroundColor: Color(0xFF707070),

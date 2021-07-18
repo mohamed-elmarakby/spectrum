@@ -7,7 +7,6 @@ import 'package:graduation_project/main.dart';
 import 'package:graduation_project/models/register_model.dart';
 import 'package:graduation_project/models/token_decryption_model.dart';
 import 'package:graduation_project/pages/authentication/signin.dart';
-import 'package:graduation_project/pages/groups/groups_list.dart';
 import 'package:graduation_project/pages/main_screens/home_screen.dart';
 import 'package:graduation_project/services/authentication_services.dart';
 import 'package:graduation_project/sharedPreference.dart';

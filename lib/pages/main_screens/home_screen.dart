@@ -135,13 +135,49 @@ class _HomeScreenState extends State<HomeScreen> {
       ApplicationProvider applicationProvider =
           Provider.of<ApplicationProvider>(context, listen: false);
       try {
-        applicationProvider.getMyPosts();
-        applicationProvider.getAllPosts();
-        applicationProvider.getNotification();
-        applicationProvider.getRequest();
-        applicationProvider.getChatMsg();
-        applicationProvider.getGroupMsg();
-        applicationProvider.getAllUsers();
+        applicationProvider.getMyPosts().catchError((onError) {
+          log(onError.toString());
+          setState(() {
+            loading = false;
+          });
+        });
+        applicationProvider.getAllPosts().catchError((onError) {
+          log(onError.toString());
+          setState(() {
+            loading = false;
+          });
+        });
+
+        applicationProvider.getNotification().catchError((onError) {
+          log(onError.toString());
+          setState(() {
+            loading = false;
+          });
+        });
+        applicationProvider.getRequest().catchError((onError) {
+          log(onError.toString());
+          setState(() {
+            loading = false;
+          });
+        });
+        applicationProvider.getChatMsg().catchError((onError) {
+          log(onError.toString());
+          setState(() {
+            loading = false;
+          });
+        });
+        applicationProvider.getGroupMsg().catchError((onError) {
+          log(onError.toString());
+          setState(() {
+            loading = false;
+          });
+        });
+        applicationProvider.getAllUsers().catchError((onError) {
+          log(onError.toString());
+          setState(() {
+            loading = false;
+          });
+        });
         applicationProvider.getAllMyFriends().then((value) {
           setState(() {
             loading = false;
@@ -170,8 +206,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void connect() {
     ApplicationProvider applicationProvider =
         Provider.of<ApplicationProvider>(context, listen: false);
-    // MessageModel messageModel = MessageModel(sourceId: widget.sourceChat.id.toString(),targetId: );
-    // socket.emit("signin", widget.sourchat.id);
     socket = IO.io("http://192.168.1.7:3000", <String, dynamic>{
       "transports": ["websocket"],
       "autoConnect": false,

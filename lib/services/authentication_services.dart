@@ -89,6 +89,7 @@ class AuthenticationServices {
         .then(
       (value) {
         print(value.statusCode);
+        print('sent token successfully');
         print(value.data);
         success = value.data['success'];
       },

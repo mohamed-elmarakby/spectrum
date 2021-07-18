@@ -368,7 +368,8 @@ class _ProfilePageScreenState extends State<ProfilePageScreen> {
                                         child: CachedNetworkImage(
                                           imageUrl: widget.isMine
                                               ? user.cover
-                                              : userInfoResponse.cover,
+                                              : userInfoResponse.cover
+                                                  .toString(),
                                           useOldImageOnUrlChange: true,
                                           width:
                                               MediaQuery.of(context).size.width,
