@@ -93,7 +93,10 @@ class AuthenticationServices {
         print(value.data);
         success = value.data['success'];
       },
-    );
+    ).catchError((onError) {
+      log('error login: $onError');
+    });
+    log(success.toString());
     return success;
   }
 

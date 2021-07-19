@@ -65,38 +65,39 @@ class _SignInState extends State<SignIn> {
           await FriendsServices()
               .userInfoApi(userId: info['id'].toString())
               .then((value1) async {
-            log(value1.address);
-            setState(() {
-              user.address = value1.address;
-              info['address'] = user.address;
-            });
-            await SharedPref().save('user', info);
-            log(user.toString() + user.runtimeType.toString() + user.address);
-            Future.delayed(Duration(milliseconds: 500), () async {
-              await AuthenticationServices()
-                  .sendToken(userId: value1.id)
-                  .then((value) {
-                if (value) {
-                  setState(() {
-                    loginLoading = false;
-                  });
-                  Navigator.push(
-                      context,
-                      PageTransition(
-                          duration: Duration(milliseconds: 600),
-                          type: PageTransitionType.fade,
-                          child: HomeScreen()));
-                } else {
-                  setState(() {
-                    loginLoading = false;
-                  });
-                  AlertsManager().showError(
-                      context: context,
-                      title: 'Ops..',
-                      body: 'Something Went Wrong',
-                      description: 'Something Went Wrong');
-                }
-              });
+            await AuthenticationServices()
+                .sendToken(userId: value1.id)
+                .then((value) async {
+              if (value) {
+                setState(() {
+                  loginLoading = false;
+                });
+                log(value1.address);
+                setState(() {
+                  user.address = value1.address;
+                  info['address'] = user.address;
+                });
+                await SharedPref().save('user', info);
+                log(user.toString() +
+                    user.runtimeType.toString() +
+                    user.address);
+                log('value1.id: ${value1.id} , mobileToken: $mobileToken');
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        duration: Duration(milliseconds: 600),
+                        type: PageTransitionType.fade,
+                        child: HomeScreen()));
+              } else {
+                setState(() {
+                  loginLoading = false;
+                });
+                AlertsManager().showError(
+                    context: context,
+                    title: 'Ops..',
+                    body: 'Something Went Wrong',
+                    description: 'Something Went Wrong');
+              }
             }).catchError((onError) {
               log(onError.toString());
               setState(() {

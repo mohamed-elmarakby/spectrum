@@ -71,22 +71,25 @@ class _MyHomePageState extends State<MyHomePage> {
     String tempUser = await readData(key: 'user');
     log(tempUser.toString());
     if (tempUser == null) {
-      return Navigator.push(
-          context,
-          PageTransition(
-              duration: Duration(milliseconds: 600),
-              type: PageTransitionType.fade,
-              child: FirstWalkThrough()));
+      Future.delayed(Duration(seconds: 1, milliseconds: 800)).then((value) {
+        return Navigator.push(
+            context,
+            PageTransition(
+                duration: Duration(milliseconds: 600),
+                type: PageTransitionType.fade,
+                child: FirstWalkThrough()));
+      });
+    } else if (tempUser != null) {
+      user = UserInfo.fromJson(json.decode(tempUser));
+      Future.delayed(Duration(seconds: 1, milliseconds: 800)).then((value) {
+        Navigator.push(
+            context,
+            PageTransition(
+                duration: Duration(milliseconds: 600),
+                type: PageTransitionType.fade,
+                child: HomeScreen()));
+      });
     }
-    user = UserInfo.fromJson(json.decode(tempUser));
-    Future.delayed(Duration(seconds: 1, milliseconds: 800)).then((value) {
-      Navigator.push(
-          context,
-          PageTransition(
-              duration: Duration(milliseconds: 600),
-              type: PageTransitionType.fade,
-              child: HomeScreen()));
-    });
   }
 
   @override

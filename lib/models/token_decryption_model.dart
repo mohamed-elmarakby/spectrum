@@ -9,6 +9,7 @@ class UserInfo {
     this.id,
     this.name,
     this.email,
+    this.mobileToken,
     this.image,
     this.cover,
     this.address,
@@ -17,6 +18,7 @@ class UserInfo {
   });
 
   String id;
+  String mobileToken;
   String name;
   String email;
   String image;
